@@ -21,6 +21,12 @@ import invariant from 'tiny-invariant'
 import { Hint, Info, Warning } from '~/components/docs/Callout.tsx'
 import CopyButton from '~/components/docs/CopyButton.tsx'
 import Image from '~/components/docs/Image.tsx'
+import {
+	MediaHeading,
+	MediaImage,
+	MediaItem,
+	MediaRow,
+} from '~/components/docs/MediaRow.tsx'
 import Ref from '~/components/docs/Ref.tsx'
 import { ChildHeading } from '~/components/docs/Spec.tsx'
 import Tag from '~/components/docs/Tag.tsx'
@@ -195,6 +201,10 @@ export function Content({
 								CopyButton,
 								Tag,
 								Ref,
+								MediaRow,
+								MediaHeading,
+								MediaImage,
+								MediaItem,
 							}}
 						/>
 					) : null}
@@ -233,7 +243,7 @@ export function Content({
 					</nav>
 				) : null}
 			</article>
-			{tableOfContents?.length ? (
+			{!attributes.hideTableOfContents && tableOfContents?.length ? (
 				<div className="relative hidden w-56 max-w-xs shrink-0 lg:block xl:w-64 2xl:w-full">
 					<TableOfContents items={tableOfContents} className="sticky top-24" />
 				</div>

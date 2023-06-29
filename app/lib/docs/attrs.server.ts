@@ -5,6 +5,7 @@ export const docAttributes = z.object({
 	title: z.string(),
 	weight: z.number().optional(),
 	draft: z.boolean().optional().default(false),
+	hideTableOfContents: z.boolean().optional().default(false),
 	showChildren: z.boolean().optional().default(false),
 	meta: z
 		.object({
@@ -25,8 +26,9 @@ export function parseAttrs(mdx: string): { content: string } & DocAttributes {
 		title,
 		weight,
 		draft = false,
+		hideTableOfContents = false,
 		showChildren = false,
 	} = docAttributes.parse(data)
 
-	return { title, weight, draft, content, showChildren }
+	return { title, weight, draft, content, hideTableOfContents, showChildren }
 }
