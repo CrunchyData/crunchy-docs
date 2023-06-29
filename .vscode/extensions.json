@@ -1,0 +1,10 @@
+{
+	"recommendations": [
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"bradlc.vscode-tailwindcss",
+		"yoavbls.pretty-ts-errors",
+		"unifiedjs.vscode-mdx",
+		"streetsidesoftware.code-spell-checker"
+	]
+}

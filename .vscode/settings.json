@@ -1,0 +1,9 @@
+{
+	"cSpell.words": ["clsx", "rehype", "tailwindcss"],
+	"[mdx]": {
+		"editor.wordWrap": "wordWrapColumn"
+	},
+	"cSpell.enableFiletypes": ["mdx"],
+	"mdx.experimentalLanguageServer": true,
+	"editor.formatOnSave": true
+}
