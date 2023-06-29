@@ -154,27 +154,29 @@ export function Content({
 		<div className="flex gap-8 px-6 md:px-8">
 			<article className="min-w-0 max-w-4xl flex-1">
 				<div>
-					<nav aria-label="breadcrumb">
-						<ol className="flex items-center gap-2 text-sm">
-							{breadcrumbs.map(({ label, to }, i) => (
-								<Fragment key={to}>
-									{breadcrumbs?.length > 1 && i > 0 ? (
-										<ChevronRightIcon className="h-3 w-3" />
-									) : null}
-									{pathname === to ? (
-										<p className="font-bold text-primary">{label}</p>
-									) : (
-										<Link
-											to={`${basePath}${to}`}
-											className="underline underline-offset-4 hover:text-primary hover:no-underline"
-										>
-											{label}
-										</Link>
-									)}
-								</Fragment>
-							))}
-						</ol>
-					</nav>
+					{breadcrumbs.length > 1 ? (
+						<nav aria-label="breadcrumb">
+							<ol className="flex items-center gap-2 text-sm">
+								{breadcrumbs.map(({ label, to }, i) => (
+									<Fragment key={to}>
+										{breadcrumbs?.length > 1 && i > 0 ? (
+											<ChevronRightIcon className="h-3 w-3" />
+										) : null}
+										{pathname === to ? (
+											<p className="font-bold text-primary">{label}</p>
+										) : (
+											<Link
+												to={`${basePath}${to}`}
+												className="underline underline-offset-4 hover:text-primary hover:no-underline"
+											>
+												{label}
+											</Link>
+										)}
+									</Fragment>
+								))}
+							</ol>
+						</nav>
+					) : null}
 				</div>
 				{showTitle ? (
 					<h1 className="mt-8 font-display text-3xl font-bold text-primary md:text-4xl">
