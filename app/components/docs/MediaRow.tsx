@@ -14,17 +14,24 @@ export function MediaImage({
 	src,
 	to,
 	...props
-}: { src: string } & Omit<LinkProps, 'className'>) {
+}: { src: string; to?: string } & Omit<LinkProps, 'to' | 'className'>) {
 	const { pathname } = useLocation()
+	const wrapperClass = 'not-prose aspect-h-3 aspect-w-4 block'
 	return (
 		<div className="overflow-hidden rounded-xl">
-			<Link
-				{...props}
-				to={`${getProductIndexPath(pathname)}/${to}`}
-				className="not-prose aspect-h-3 aspect-w-4 block"
-			>
-				<img src={src} className="object-contain" />
-			</Link>
+			{to ? (
+				<Link
+					{...props}
+					to={`${getProductIndexPath(pathname)}/${to}`}
+					className={wrapperClass}
+				>
+					<img src={src} className="object-contain" />
+				</Link>
+			) : (
+				<div className={wrapperClass}>
+					<img src={src} className="object-contain" />
+				</div>
+			)}
 		</div>
 	)
 }
@@ -33,13 +40,17 @@ export function MediaHeading({
 	children,
 	to,
 	...props
-}: PropsWithChildren<LinkProps>) {
+}: PropsWithChildren<{ to?: string } & Omit<LinkProps, 'to'>>) {
 	const { pathname } = useLocation()
 	return (
 		<h3>
-			<Link {...props} to={`${getProductIndexPath(pathname)}/${to}`}>
-				{children}
-			</Link>
+			{to ? (
+				<Link {...props} to={`${getProductIndexPath(pathname)}/${to}`}>
+					{children}
+				</Link>
+			) : (
+				<span>{children}</span>
+			)}
 		</h3>
 	)
 }
