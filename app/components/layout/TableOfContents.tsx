@@ -8,20 +8,27 @@ function useActiveElement(items: TOCParent[]) {
 	const [activeItem, setActiveItem] = useState<string | null>(null)
 	useEffect(() => {
 		const observer = new IntersectionObserver(entries => {
-			let localActive = null
 			for (let entry of entries) {
-				if (entry.isIntersecting || entry.boundingClientRect.y < 0) {
+				if (entry.isIntersecting) {
 					const id = entry.target.getAttribute('id')
-					localActive = id
 					if (id) setActiveItem(id)
-				} else if (localActive !== null) {
 					break
 				}
 			}
 		})
 
 		const headings = document.querySelectorAll('h2[id]')
-		headings.forEach(h => observer.observe(h))
+		headings.forEach(h => {
+			if (window) {
+				const { top } = h.getBoundingClientRect()
+				const isAboveTheBottom = top - window.innerHeight
+				const id = h.getAttribute('id')
+				if (id && isAboveTheBottom < 0) {
+					setActiveItem(id)
+				}
+			}
+			observer.observe(h)
+		})
 		return () => headings.forEach(h => observer.unobserve(h))
 	}, [items])
 
