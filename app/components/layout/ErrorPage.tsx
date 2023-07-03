@@ -1,8 +1,6 @@
 import { Link } from '@remix-run/react'
-import { useEffect, useState } from 'react'
 
 export default function ErrorPage({
-	stack,
 	code = 404,
 	title = 'Page Not Found',
 	message = 'Please check the URL in the address bar and try again',
@@ -10,12 +8,7 @@ export default function ErrorPage({
 	code?: number
 	title?: string
 	message?: JSX.Element | string
-	stack?: string
 }) {
-	const [isDev, setIsDev] = useState(false)
-	useEffect(() => {
-		setIsDev(window.ENV.MODE === 'development')
-	}, [])
 	return (
 		<div className="bg-white px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
 			<main className="sm:flex">
@@ -29,11 +22,6 @@ export default function ErrorPage({
 						</h1>
 						<p className="mt-1 text-base text-gray-500">{message}</p>
 					</div>
-					{stack && isDev ? (
-						<div className="remark-highlight text-xs">
-							<pre className="language-json">{stack}</pre>
-						</div>
-					) : null}
 					<div className="mt-10 flex space-x-3 sm:border-l sm:border-transparent sm:pl-6">
 						<Link
 							to="/"

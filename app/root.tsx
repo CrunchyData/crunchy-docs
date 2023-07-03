@@ -18,6 +18,7 @@ import {
 	useRouteLoaderData,
 } from '@remix-run/react'
 import invariant from 'tiny-invariant'
+import ErrorPage from './components/layout/ErrorPage.tsx'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import { getEnv } from './utils/env.server.ts'
 
@@ -58,6 +59,7 @@ export const meta: V2_MetaFunction = () => {
 }
 
 export async function loader() {
+	throw new Error('Whoops')
 	return json({
 		ENV: getEnv(),
 	})
@@ -203,24 +205,17 @@ export function ErrorBoundary() {
 	console.log(error)
 	let status = 500
 	let message = 'Unknown error'
-	let stack = undefined
 
 	if (isRouteErrorResponse(error)) {
 		status = error.status
 		message = error.data
 	} else if (error instanceof Error) {
 		message = error.message
-		stack = error.stack
 	}
 
 	return (
 		<ErrorDocument title="Error!">
-			{/* <ErrorPage
-				code={status}
-				title={`There was an error`}
-				message={message}
-				stack={stack}
-			/> */}
+			<ErrorPage code={status} title={`There was an error`} message={message} />
 		</ErrorDocument>
 	)
 }
