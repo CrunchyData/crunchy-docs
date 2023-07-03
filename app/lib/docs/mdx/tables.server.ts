@@ -1,4 +1,4 @@
-import { type Element } from 'hast-util-is-element'
+import { isElement, type Element } from 'hast-util-is-element'
 import { visit } from 'unist-util-visit'
 
 export default function rehypeWrapTable() {
@@ -29,6 +29,23 @@ export default function rehypeWrapTable() {
 					],
 				}
 				parent.children[i] = wrapped
+			}
+
+			if (i !== null && node.tagName === 'tbody') {
+				node.children = node.children
+					.filter((child: any) => isElement(child))
+					.map((child: Element, childIdx: number) => {
+						if (childIdx % 2 === 0) {
+							const className = child.properties?.className ?? ''
+
+							if (!child?.properties) {
+								child.properties = {}
+							}
+
+							child.properties.className = `${className} bg-gray-100`
+						}
+						return child
+					})
 			}
 		})
 	}
