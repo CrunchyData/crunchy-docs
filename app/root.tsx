@@ -59,7 +59,6 @@ export const meta: V2_MetaFunction = () => {
 }
 
 export async function loader() {
-	throw new Error('Whoops')
 	return json({
 		ENV: getEnv(),
 	})
