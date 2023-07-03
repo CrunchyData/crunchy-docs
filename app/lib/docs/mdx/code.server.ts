@@ -25,6 +25,8 @@ export function rehypeCopyCode() {
 					],
 					children: [],
 				}
+				const className = node.properties?.className ?? ''
+				node.properties.className = `${className} group`.trim()
 				node.children.push(CopyButton)
 			},
 		)

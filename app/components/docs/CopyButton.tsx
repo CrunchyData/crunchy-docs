@@ -47,7 +47,7 @@ export default function CopyButton({ text }: { text: string }) {
 			type="button"
 			onClick={onClick}
 			className={clsx(
-				'absolute right-3 top-3 flex cursor-pointer flex-row items-center justify-center rounded-md border border-transparent px-2 py-1 text-primary shadow-sm transition duration-300 hover:shadow-md focus:ring-2 focus:ring-crunchy/50 sm:text-sm',
+				'absolute right-3 top-3 flex cursor-pointer flex-row items-center justify-center rounded-md border border-transparent px-2 py-1 text-primary opacity-0 shadow-sm transition duration-300 hover:opacity-50 hover:shadow-md focus:ring-2 focus:ring-crunchy/50 group-hover:opacity-75 sm:text-sm',
 				isCopied
 					? 'bg-emerald-500 text-white focus:ring-emerald-500/50'
 					: `bg-white`,
