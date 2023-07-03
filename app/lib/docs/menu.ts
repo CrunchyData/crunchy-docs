@@ -80,18 +80,23 @@ export function getPagination(nav: NavItem[], path: string): Pagination {
 			}
 
 			// Two levels deeper
+			let grandChildIndex = 0
 			for (let child of current.children) {
 				const grandChildPagination = nestedPagination(child, path)
 				if (grandChildPagination) {
 					if (!grandChildPagination.next) {
-						if (current.children[i + 1]) {
-							grandChildPagination.next = navItemToLink(current.children[i + 1])
+						console.log(current)
+						if (current.children[grandChildIndex + 1]) {
+							grandChildPagination.next = navItemToLink(
+								current.children[grandChildIndex + 1],
+							)
 						} else if (nav[i + 1]) {
 							grandChildPagination.next = navItemToLink(nav[i + 1])
 						}
 					}
 					return [true, grandChildPagination]
 				}
+				grandChildIndex++
 			}
 
 			return [found, pagination]
