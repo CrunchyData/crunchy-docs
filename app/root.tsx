@@ -28,24 +28,6 @@ export const handle = {
 
 export const links: LinksFunction = () => {
 	return [
-		{
-			rel: 'apple-touch-icon',
-			sizes: '180x180',
-			href: '/favicons/apple-icon-180x180.png',
-		},
-		{
-			rel: 'icon',
-			type: 'image/png',
-			sizes: '32x32',
-			href: '/favicons/favicon-32x32.png',
-		},
-		{
-			rel: 'icon',
-			type: 'image/png',
-			sizes: '16x16',
-			href: '/favicons/favicon-16x16.png',
-		},
-		{ rel: 'icon', href: '/favicon.ico' },
 		{ rel: 'stylesheet', href: tailwindStylesheetUrl },
 		cssBundleHref ? { rel: 'stylesheet', href: cssBundleHref } : null,
 	].filter(Boolean)
@@ -172,7 +154,6 @@ export default function App() {
 				/>
 				<meta content="#193656" name="theme-color" />
 				<link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-				<link href="/favicon.ico" rel="icon" type="image/x-icon" />
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
 				<link
 					rel="preconnect"
