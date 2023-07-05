@@ -114,7 +114,7 @@ export default function Container({
 									leaveFrom="transform opacity-100 scale-100"
 									leaveTo="transform opacity-0 scale-95"
 								>
-									<Menu.Items className="absolute left-0 mt-2 flex max-h-[200px] w-full origin-top-left flex-col overflow-y-auto overflow-x-hidden rounded-md border bg-white py-1 shadow-lg focus:outline-none">
+									<Menu.Items className="absolute left-0 z-30 mt-2 flex max-h-[200px] w-full origin-top-left flex-col overflow-y-auto overflow-x-hidden rounded-md border bg-white py-1 shadow-lg focus:outline-none">
 										{Zipper.toArray(versions).map(({ to, label }) => (
 											<Menu.Item
 												key={to}
