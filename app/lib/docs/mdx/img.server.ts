@@ -7,6 +7,9 @@ function createImageComponent(node: Element): MdxJsxFlowElement {
 		typeof node?.properties?.src === 'string'
 			? node.properties.src
 			: '/images/missing-image'
+
+	const isUrl = src.startsWith('http')
+
 	const alt =
 		typeof node?.properties?.alt === 'string' ? node.properties.alt : ''
 
@@ -17,7 +20,7 @@ function createImageComponent(node: Element): MdxJsxFlowElement {
 			{
 				type: 'mdxJsxAttribute',
 				name: 'src',
-				value: src.replace(/\..*$/, ''),
+				value: isUrl ? src : src.replace(/\..*$/, ''),
 			},
 			{
 				type: 'mdxJsxAttribute',

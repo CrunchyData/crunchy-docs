@@ -5,8 +5,7 @@ import { Fragment, useState, type ComponentPropsWithoutRef } from 'react'
 function Base({ src, width, alt, ...props }: ComponentPropsWithoutRef<'img'>) {
 	return (
 		<img
-			src={`${src}.webp`}
-			srcSet={`${src}@2x.webp 2x, ${src}.webp 1x`}
+			src={src}
 			alt={alt}
 			className="mx-auto w-full"
 			{...(width ? { style: { maxWidth: `${width}px` } } : {})}
@@ -60,8 +59,10 @@ export default function Image({
 								leaveFrom="opacity-100 scale-100"
 								leaveTo="opacity-0 scale-95"
 							>
-								<Dialog.Panel className="relative w-full max-w-7xl transform transition-all">
-									<img src={`${src}@2x.webp`} alt={alt} className="w-full" />
+								<Dialog.Panel className="relative w-full max-w-7xl transition-all">
+									<div className="overflow-hidden rounded-lg bg-white p-2">
+										<img src={src} alt={alt} className="w-full" />
+									</div>
 									<p className="pt-4 font-display text-lg font-bold text-white">
 										{alt}
 									</p>
