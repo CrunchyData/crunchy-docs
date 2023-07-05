@@ -44,6 +44,8 @@ export async function publicLoader({ params }: LoaderArgs) {
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
 
+	console.log(`Fetching public doc for: ${splat}`)
+
 	const doc = await getDoc({
 		product,
 		ref,
@@ -77,6 +79,8 @@ export async function privateLoader({ params }: LoaderArgs) {
 	let { product, ref, '*': splat } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
+
+	console.log(`Fetching private doc for: ${splat}`)
 
 	const doc = await getDoc({
 		product,
@@ -276,7 +280,6 @@ export function ErrorBoundary() {
 						status === 404 ? 'No content found.' : 'Server error on our end.'
 					}
 					message={message}
-					stack={stack}
 				/>
 			</div>
 		</div>
