@@ -6,11 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "run-s build:*",
-    "build:images": "ts-node --esm scripts/process-images.ts",
     "build:remix": "remix build",
     "build:server": "tsx ./scripts/build-server.ts",
     "dev": "run-p dev:*",
-    "dev:images": "ts-node --esm scripts/process-images.ts watch",
     "dev:remix": "remix dev -c \"npm run dev-server\" --no-restart",
     "dev-server": "cross-env MOCKS=true tsx watch --clear-screen=false --ignore \"app/**\" --ignore \"build/**\" --ignore \"node_modules/**\" ./index.js",
     "format": "prettier --write .",
@@ -75,7 +73,6 @@
     "remark-gfm": "^3.0.1",
     "remark-prism": "^1.3.6",
     "semver": "^7.5.1",
-    "sharp": "^0.32.1",
     "strip-markdown": "^5.0.1",
     "tiny-invariant": "^1.3.1",
     "zod": "^3.21.4"
