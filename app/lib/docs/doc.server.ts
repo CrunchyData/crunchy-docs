@@ -59,10 +59,8 @@ export async function getDoc({
 
 	if (isPrivate) {
 		const key = `private:${product}:${ref}:${slug}`
-		if (docCache.has(key)) {
-			const doc = await docCache.fetch(key)
-			return doc
-		}
+		const doc = await docCache.fetch(key)
+		if (doc) return doc
 	}
 
 	const key = `public:${product}:${ref}:${slug}`
