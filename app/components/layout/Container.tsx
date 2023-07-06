@@ -15,6 +15,7 @@ type ContainerProps = {
 	versions: Zipper.NonEmptyZipperObj<TNavLink> | null
 	links: TNavLink[]
 	basePath: string
+	isPrivate?: boolean
 }
 
 export default function Container({
@@ -24,6 +25,7 @@ export default function Container({
 	versions,
 	links,
 	basePath,
+	isPrivate = false,
 }: React.PropsWithChildren<ContainerProps>) {
 	const [isSearching, setIsSearching] = React.useState(false)
 	const [os, setOs] = React.useState<string | null>('macos')
@@ -73,6 +75,7 @@ export default function Container({
 							open={isSearching}
 							setOpen={setIsSearching}
 							productPath={product.to}
+							isPrivate={isPrivate}
 						/>
 					)}
 				</div>

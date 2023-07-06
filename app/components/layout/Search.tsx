@@ -33,10 +33,12 @@ export function SearchPalette({
 	open,
 	setOpen,
 	productPath,
+	isPrivate = false,
 }: {
 	open: boolean
 	setOpen: Dispatch<SetStateAction<boolean>>
 	productPath: string
+	isPrivate?: boolean
 }) {
 	const [query, setQuery] = useState('')
 	const { load, ...fetcher } = useFetcher<typeof loader>()
@@ -45,7 +47,11 @@ export function SearchPalette({
 
 	useEffect(
 		function getFilteredPosts() {
-			load(`/documentation${productPath}/actions/search?term=${query}`)
+			load(
+				`/documentation${
+					isPrivate ? '/private' : ''
+				}${productPath}/actions/search?term=${query}`,
+			)
 		},
 		[load, query],
 	)

@@ -65,6 +65,7 @@ export default function DocLayout() {
 			versions={versions}
 			links={links}
 			basePath={basePath}
+			isPrivate={true}
 		>
 			<Outlet />
 		</Container>
