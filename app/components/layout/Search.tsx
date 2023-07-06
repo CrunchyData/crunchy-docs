@@ -10,7 +10,7 @@ import { SearchDoc } from '~/lib/docs/search.server.ts'
 import {
 	SearchDocExcerpt,
 	type loader,
-} from '~/routes/$product.$ref.actions.search.tsx'
+} from '~/routes/documentation.$product.$ref.actions.search.tsx'
 
 function showExcerpt(body: string | null, query: string) {
 	if (body === null) return '...'
@@ -45,7 +45,7 @@ export function SearchPalette({
 
 	useEffect(
 		function getFilteredPosts() {
-			load(`${productPath}/actions/search?term=${query}`)
+			load(`/documentation${productPath}/actions/search?term=${query}`)
 		},
 		[load, query],
 	)
