@@ -28,5 +28,3 @@ POST,DELETE,PATCH,PUT  /   https://www.youtube.com/watch?v=dQw4w9WgXcQ
 /webfig(.*)                https://www.youtube.com/watch?v=dQw4w9WgXcQ
 /config(.*)                https://www.youtube.com/watch?v=dQw4w9WgXcQ
 /console(.*)               https://www.youtube.com/watch?v=dQw4w9WgXcQ
-
-/documentation/postgres-operator/5.4.0/(.*)   /documentation/postgres-operator/latest/$1

@@ -19,7 +19,7 @@
     "typecheck": "tsc",
     "validate": "run-p lint typecheck test",
     "lint-staged": "lint-staged",
-    "migrate-docs": "ts-node --esm other/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-docs"
+    "migrate-docs": "ts-node --esm scripts/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-private-docs/private/latest"
   },
   "lint-staged": {
     "*.mdx": "npm run lint:files"
