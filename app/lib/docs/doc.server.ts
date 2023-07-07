@@ -118,16 +118,20 @@ function getFilename({
 }) {
 	if (isPrivate) {
 		let filePath = path.join(privateContentPath(product, ref), slug)
+		console.log(`Checking if filepath exists: ${filePath}`)
 		if (existsSync(`${filePath}.mdx`)) return `${filePath}.mdx`
 
 		filePath = path.join(removeLastSlash(filePath), 'index')
+		console.log(`Checking if filepath exists: ${filePath}`)
 		if (existsSync(`${filePath}.mdx`)) return `${filePath}.mdx`
 	}
 
 	let filePath = path.join(contentPath(product, ref), slug)
+	console.log(`Checking if filepath exists: ${filePath}`)
 	if (existsSync(`${filePath}.mdx`)) return `${filePath}.mdx`
 
 	filePath = path.join(removeLastSlash(filePath), 'index')
+	console.log(`Checking if filepath exists: ${filePath}`)
 	if (existsSync(`${filePath}.mdx`)) return `${filePath}.mdx`
 
 	throw Error(`This file doesn't exists: ${product}/${ref}/${slug}`)
