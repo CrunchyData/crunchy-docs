@@ -91,6 +91,11 @@ function transformNode(node: any, i: number, level = 0) {
 					return convertComponent(raw, node)
 				}
 
+				case 'MediaHeading': {
+					const raw = `<Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', marginTop: 18 }} />`
+					return convertComponent(raw, node)
+				}
+
 				case 'Text':
 				case 'View':
 					return node
@@ -136,6 +141,25 @@ function transformNode(node: any, i: number, level = 0) {
 					return convertComponent(raw, node)
 				}
 
+				case 'MediaRow': {
+					const raw = `<View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} />`
+					return convertComponent(raw, node)
+				}
+
+				case 'MediaItem': {
+					const raw = `<View style={{ width: '30%' }} />`
+					return convertComponent(raw, node)
+				}
+
+				case 'MediaImage': {
+					let src = node.attributes?.find(
+						attr => attr.type === 'mdxJsxAttribute' && attr.name === 'src',
+					)?.value
+
+					const raw = `<Image src="${src}" style={{ height: 100 }} />`
+					return convertComponent(raw, node)
+				}
+
 				case 'h2': {
 					const raw = `<Text wrap style={{ fontSize: 18, fontFamily: 'Helvetica-Bold', marginTop: 20 }} />`
 
@@ -157,16 +181,6 @@ function transformNode(node: any, i: number, level = 0) {
 					let src = node.attributes?.find(
 						attr => attr.type === 'mdxJsxAttribute' && attr.name === 'src',
 					)?.value
-
-					if (typeof src === 'string') {
-						if (!src.match(/\.(png|jpg)$/)) {
-							src = `${src.replace(/\..*$/, '')}.png`
-						}
-
-						src = `./public/pdf${
-							src.includes('/images') ? '' : '/images'
-						}${src}`
-					}
 
 					const width =
 						node.attributes?.find(
@@ -473,14 +487,6 @@ function isMdxJsxFlowElement(n: unknown): n is MdxJsxFlowElement {
 
 function convertImage(node: Element) {
 	let src = node.properties?.src
-
-	if (typeof src === 'string') {
-		if (!src.match(/\.(png|jpg)$/)) {
-			src = `${src.replace(/\..*$/, '')}.png`
-		}
-
-		src = `./public/pdf${src.includes('/images') ? '' : '/images'}${src}`
-	}
 
 	const raw = `<Image src="${src}" style={{ marginTop: 8 }} />`
 

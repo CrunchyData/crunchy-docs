@@ -29,22 +29,24 @@ export async function renderPDF({
 	ref: string
 	isPrivate?: boolean
 }) {
-	const doc = await getPDFData({ product, ref, isPrivate })
-	if (!doc)
+	const docs = await getPDFData({ product, ref, isPrivate })
+	if (!docs)
 		throw new Error(
-			`No doc found for: ${isPrivate ? 'private/' : ''}${product}/${ref}`,
+			`No docs found for: ${isPrivate ? 'private/' : ''}${product}/${ref}`,
 		)
 
-	return renderToStream(<PDF doc={doc} />)
+	return renderToStream(<PDF docs={docs} />)
 		.then(stream.Readable.from)
 		.then(createReadableStreamFromReadable)
 }
 
-function PDF({ doc }: { doc: string }) {
+function PDF({ docs }: { docs: string[] }) {
 	return (
 		<Document style={{ fontFamily: 'Helvetica' }}>
 			<Page size="LETTER" wrap={true} style={{ padding: '40px' }}>
-				<Doc doc={doc} />
+				{docs.map(doc => (
+					<Doc doc={doc} />
+				))}
 			</Page>
 		</Document>
 	)
@@ -67,7 +69,7 @@ function Doc({ doc }: { doc: string }) {
 }
 
 declare global {
-	var pdfCache: LRUCache<string, string | undefined>
+	var pdfCache: LRUCache<string, string[] | undefined>
 }
 
 let NO_CACHE = process.env.NO_CACHE ?? false
@@ -79,7 +81,7 @@ let NO_CACHE = process.env.NO_CACHE ?? false
  * let's have simpler and faster deployments with just one origin server, but
  * still distribute the documents across the CDN.
  */
-global.pdfCache ??= new LRUCache<string, string | undefined>({
+global.pdfCache ??= new LRUCache<string, string[] | undefined>({
 	max: 300,
 	ttl: NO_CACHE ? 1 : 1000 * 60 * 5, // 5 minutes
 	allowStale: !NO_CACHE,
@@ -99,7 +101,7 @@ export async function getPDFData({
 	product: string
 	ref: string
 	isPrivate?: boolean
-}): Promise<string | undefined> {
+}): Promise<string[] | undefined> {
 	if (NO_CACHE) {
 		return getFreshPDFData({ product, ref, isPrivate })
 	}
@@ -125,7 +127,7 @@ async function getFreshPDFData({
 	product: string
 	ref: string
 	isPrivate?: boolean
-}): Promise<string> {
+}): Promise<string[]> {
 	const [menu, config] = await Promise.all([
 		getMenu({ product, ref, isPrivate }),
 		getConfig({ product, ref, isPrivate }),
@@ -152,16 +154,17 @@ async function getFreshPDFData({
 					ref,
 					isPrivate,
 				})
+
 				if (pdf) docs.push(pdf)
 			}
 		}
 	}
 
-	const { attributes, pdf } = await parseMdxToPdf(
-		replaceConfigVars(docs.join('/n'), config),
+	return Promise.all(
+		docs.map(doc =>
+			parseMdxToPdf(replaceConfigVars(doc, config)).then(({ pdf }) => pdf),
+		),
 	)
-
-	return pdf
 }
 
 async function pdfFromItem({
@@ -176,7 +179,7 @@ async function pdfFromItem({
 	isPrivate?: boolean
 }): Promise<string | null> {
 	const slug = slugToDocKey(item.slug, product, ref)
-	// if (slug !== '/references/crd') return null
+	// if (slug !== '/quickstart') return null
 
 	const doc = await getDocFromDir({ product, ref, slug, isPrivate })
 
