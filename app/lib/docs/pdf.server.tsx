@@ -44,8 +44,8 @@ function PDF({ docs }: { docs: string[] }) {
 	return (
 		<Document style={{ fontFamily: 'Helvetica' }}>
 			<Page size="LETTER" wrap={true} style={{ padding: '40px' }}>
-				{docs.map(doc => (
-					<Doc doc={doc} />
+				{docs.map((doc, i) => (
+					<Doc doc={doc} key={`doc-${i}`} />
 				))}
 			</Page>
 		</Document>

@@ -29,6 +29,10 @@ export default function Container({
 }: React.PropsWithChildren<ContainerProps>) {
 	const [isSearching, setIsSearching] = React.useState(false)
 	const [os, setOs] = React.useState<string | null>('macos')
+	const base = product.to.replaceAll('/', '-').replace(/^-/, '')
+	const pdfLink = `/documentation/${base}-${
+		isPrivate ? 'private' : 'public'
+	}.pdf`
 
 	React.useEffect(() => {
 		setOs(getOS())
@@ -147,12 +151,12 @@ export default function Container({
 					<div className="sticky bottom-0 bg-white">
 						<div className="flex items-center justify-between border-t px-4 py-3">
 							<p className="text-sm">Other formats:</p>
-							<Link
-								to={`${basePath}${product.to}.pdf`}
+							<a
+								href={pdfLink}
 								className="rounded border px-2 py-1 text-sm hover:bg-gray-50 hover:text-primary"
 							>
 								PDF
-							</Link>
+							</a>
 						</div>
 					</div>
 				</div>
