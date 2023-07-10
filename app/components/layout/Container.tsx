@@ -30,7 +30,7 @@ export default function Container({
 	const [isSearching, setIsSearching] = React.useState(false)
 	const [os, setOs] = React.useState<string | null>('macos')
 	const base = product.to.replaceAll('/', '-').replace(/^-/, '')
-	const pdfLink = `/documentation/${base}-${
+	const pdfLink = `/documentation/pdfs/${base}-${
 		isPrivate ? 'private' : 'public'
 	}.pdf`
 
