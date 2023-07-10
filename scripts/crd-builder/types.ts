@@ -9,6 +9,7 @@ export type Schema =
 			version: string
 			description?: string
 			properties: Schema[]
+			required: boolean
 	  }
 	| {
 			type:
@@ -28,7 +29,9 @@ export type Schema =
 			slug: string
 			description?: string
 			required: boolean
-			properties: Schema[]
+			properties?: Schema[]
+			parentName: string
+			parentSlug: string
 	  }
 	| {
 			type: '[]string' | '[]integer'
@@ -43,5 +46,7 @@ export type Schema =
 			slug: string
 			description?: string
 			required: boolean
-			items: Schema[]
+			items?: Schema[]
+			parentName: string
+			parentSlug: string
 	  }

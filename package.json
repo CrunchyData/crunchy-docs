@@ -19,7 +19,7 @@
     "typecheck": "tsc",
     "validate": "run-p lint typecheck test",
     "lint-staged": "lint-staged",
-    "build-crd": "ts-node --esm scripts/crd-builder/index.ts /Users/wking/sites/crunchy/crunchy-docs/scripts/crd-builder/pgupgrades.yaml /Users/wking/sites/crunchy/crunchy-public-docs/documentation/latest/references/crd",
+    "build-crd": "ts-node --esm scripts/crd-builder/index.ts /Users/wking/sites/crunchy/crunchy-docs/scripts/crd-builder/specs /Users/wking/sites/crunchy/crunchy-public-docs/documentation/references/crd",
     "migrate-docs": "ts-node --esm scripts/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-private-docs/private/latest"
   },
   "lint-staged": {

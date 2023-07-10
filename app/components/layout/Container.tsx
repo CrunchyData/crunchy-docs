@@ -329,7 +329,7 @@ function Subgroup({
 				</NavLink>
 			)}
 			{children?.length && open ? (
-				<ul className="ml-3 mt-2 border-l">
+				<ul className="ml-3 border-l py-2">
 					{children.map((item, i) => (
 						<li className="relative" key={item.slug}>
 							<NavLink

@@ -78,6 +78,10 @@
 	scroll-margin-top: 1.125rem;
 }
 
+.prose table td {
+	@apply p-2;
+}
+
 .prose pre {
 	@apply w-full max-w-full overflow-auto;
 }
