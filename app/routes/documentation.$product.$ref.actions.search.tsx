@@ -34,7 +34,6 @@ export async function loader({ request, params }: LoaderArgs) {
 	if (!search) return json({ results: [] })
 
 	const searchTerm = lunr.tokenizer(term)
-	console.log('TERM: ', searchTerm)
 
 	const results: SearchDocExcerpt[] = search.index
 		.query(query => {
