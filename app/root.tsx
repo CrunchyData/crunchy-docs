@@ -14,9 +14,11 @@ import {
 	Scripts,
 	ScrollRestoration,
 	useLoaderData,
+	useLocation,
 	useRouteError,
 	useRouteLoaderData,
 } from '@remix-run/react'
+import { useEffect, useState } from 'react'
 import invariant from 'tiny-invariant'
 import ErrorPage from './components/layout/ErrorPage.tsx'
 import tailwindStylesheetUrl from './styles/tailwind.css'
@@ -56,6 +58,12 @@ export function useRootLoaderData(): SerializeFrom<typeof loader> {
 
 export default function App() {
 	let { ENV } = useLoaderData<typeof loader>()
+	const { pathname } = useLocation()
+	const [encodedPage, setEncodedPage] = useState<string | null>(null)
+
+	useEffect(() => {
+		setEncodedPage(window.btoa(window.location.href))
+	}, [pathname])
 
 	return (
 		<html
@@ -169,6 +177,30 @@ export default function App() {
 				<Outlet />
 				<ScrollRestoration />
 				<Scripts />
+				{ENV.MODE === 'production' ? (
+					<>
+						<img
+							aria-hidden
+							alt=""
+							height="1"
+							width="1"
+							src={`https://link.crunchydata.com/logo.gif?page=${encodedPage}`}
+						/>
+						<script src="https://link.crunchydata.com/cd.js"></script>
+						<script
+							async
+							src="https://www.googletagmanager.com/gtag/js?id=UA-92590099-4"
+						></script>
+						<script
+							dangerouslySetInnerHTML={{
+								__html: `window.dataLayer = window.dataLayer || [];
+							function gtag(){dataLayer.push(arguments);}
+							gtag('js', new Date());
+							gtag('config', 'UA-92590099-4');`,
+							}}
+						/>
+					</>
+				) : null}
 				<script
 					dangerouslySetInnerHTML={{
 						__html: `window.ENV = ${JSON.stringify(ENV)}`,
