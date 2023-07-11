@@ -33,9 +33,12 @@ export async function loader({ request, params }: LoaderArgs) {
 	const search = await getSearch({ product, ref })
 	if (!search) return json({ results: [] })
 
+	const searchTerm = lunr.tokenizer(term)
+	console.log('TERM: ', searchTerm)
+
 	const results: SearchDocExcerpt[] = search.index
 		.query(query => {
-			query.term(term, {
+			query.term(searchTerm, {
 				editDistance: 1,
 				wildcard: lunr.Query.wildcard.TRAILING,
 			})
