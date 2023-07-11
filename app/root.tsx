@@ -177,7 +177,8 @@ export default function App() {
 				<Outlet />
 				<ScrollRestoration />
 				<Scripts />
-				{ENV.MODE === 'production' ? (
+				{ENV.MODE === 'production' &&
+				!pathname.startsWith('/documentation/private') ? (
 					<>
 						{encodedPage ? (
 							<img
