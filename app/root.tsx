@@ -179,13 +179,15 @@ export default function App() {
 				<Scripts />
 				{ENV.MODE === 'production' ? (
 					<>
-						<img
-							aria-hidden
-							alt=""
-							height="1"
-							width="1"
-							src={`https://link.crunchydata.com/logo.gif?page=${encodedPage}`}
-						/>
+						{encodedPage ? (
+							<img
+								aria-hidden
+								alt=""
+								height="1"
+								width="1"
+								src={`https://link.crunchydata.com/logo.gif?page=${encodedPage}`}
+							/>
+						) : null}
 						<script src="https://link.crunchydata.com/cd.js"></script>
 						<script
 							async
