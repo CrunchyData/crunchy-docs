@@ -45,6 +45,8 @@ Currently, the following plugins are recommended for improving the development e
 
 Content is currently managed in separate repos for each product. This site is only used to serve the documentation from all of our product repos.
 
+Once you have cloned this repo and the product docs repo you would like to edit you will set the env variable outlined in the docs repo to point to the location on your local file to find that products documentation.
+
 ## Setup from scratch
 
 Okay if you have never worked with node or npm then let's walkthrough how to get setup. Thankfully it is so much easier than it used to be.
