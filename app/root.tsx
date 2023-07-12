@@ -1,18 +1,20 @@
 import { cssBundleHref } from '@remix-run/css-bundle'
 import {
+	LoaderArgs,
 	json,
+	redirect,
 	type LinksFunction,
 	type SerializeFrom,
 	type V2_MetaFunction,
 } from '@remix-run/node'
 import {
-	isRouteErrorResponse,
 	Links,
 	LiveReload,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	isRouteErrorResponse,
 	useLoaderData,
 	useLocation,
 	useRouteError,
@@ -42,7 +44,11 @@ export const meta: V2_MetaFunction = () => {
 	]
 }
 
-export async function loader() {
+export async function loader({ request }: LoaderArgs) {
+	let url = new URL(request.url)
+	if (url.pathname.endsWith('/') && url.pathname !== '/') {
+		throw redirect(url.pathname.slice(0, -1) + url.search)
+	}
 	return json({
 		ENV: getEnv(),
 	})
