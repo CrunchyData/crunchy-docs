@@ -28,7 +28,7 @@ import {
 	MediaRow,
 } from '~/components/docs/MediaRow.tsx'
 import Ref from '~/components/docs/Ref.tsx'
-import { ChildHeading } from '~/components/docs/Spec.tsx'
+import { ChildHeading, TableLink } from '~/components/docs/Spec.tsx'
 import Tag from '~/components/docs/Tag.tsx'
 import ErrorPage from '~/components/layout/ErrorPage.tsx'
 import TableOfContents from '~/components/layout/TableOfContents.tsx'
@@ -201,6 +201,7 @@ export function Content({
 								Hint,
 								Warning,
 								ChildHeading,
+								TableLink,
 								Image,
 								CopyButton,
 								Tag,

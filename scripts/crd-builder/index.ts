@@ -228,7 +228,7 @@ function schemaToMarkdown(stream: WriteStream, schema: Schema) {
 		case 'object': {
 			if (!schema.properties) return stream
 			stream.write(
-				`<ChildHeading id="${schema.slug}" parentId="${schema.parentSlug}">${schema.parentName}.${schema.name}</ChildHeading>`,
+				`<ChildHeading id="${schema.parentSlug}${schema.slug}" parentId="${schema.parentSlug}">${schema.parentName}.${schema.name}</ChildHeading>`,
 			)
 			stream.write('\n\n')
 			if (schema.description) {
@@ -247,7 +247,7 @@ function schemaToMarkdown(stream: WriteStream, schema: Schema) {
 		case '[]object': {
 			if (!schema.items) return stream
 			stream.write(
-				`<ChildHeading id="${schema.slug}index" parentId="${schema.parentSlug}">${schema.parentName}.${schema.name}[index]</ChildHeading>`,
+				`<ChildHeading id="${schema.parentSlug}${schema.slug}index" parentId="${schema.parentSlug}">${schema.parentName}.${schema.name}[index]</ChildHeading>`,
 			)
 			stream.write('\n\n')
 			if (schema.description) {
@@ -279,11 +279,11 @@ function propertyTable(properties: Schema[]): string {
 				: `\`${property.type}\``
 
 			if (property.type === '[]object') {
-				name = `[${property.name}](#${property.parentSlug}${property.slug}index)`
+				name = `<TableLink to="${property.parentSlug}${property.slug}index">${property.name}</TableLink>`
 			}
 
 			if (property.type === 'object') {
-				name = `[${property.name}](#${property.parentSlug}${property.slug})`
+				name = `<TableLink to="${property.parentSlug}${property.slug}">${property.name}</TableLink>`
 			}
 
 			return `| ${name} | ${pType} | ${property.required ? '✅' : '❌'} | ${
