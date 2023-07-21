@@ -129,7 +129,7 @@ function buildProperties(
 					schemas.push({
 						...base,
 						type: intOrString
-							? 'map[string]: int|string'
+							? `map[string]: int\|string`
 							: 'map[string]: string',
 					})
 					break
