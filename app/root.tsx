@@ -47,7 +47,7 @@ export const meta: V2_MetaFunction = () => {
 export async function loader({ request }: LoaderArgs) {
 	let url = new URL(request.url)
 	if (url.pathname.endsWith('/') && url.pathname !== '/') {
-		throw redirect(url.pathname.slice(0, -1) + url.search)
+		throw redirect(url.pathname.slice(0, -1) + url.search, 301)
 	}
 	return json({
 		ENV: getEnv(),

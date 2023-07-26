@@ -30,7 +30,7 @@ export async function loader({ params }: LoaderArgs) {
 		'*': splat,
 	})
 
-	if (betterUrl) throw redirect('/' + betterUrl)
+	if (betterUrl) throw redirect('/documentation/' + betterUrl)
 
 	const menu = await getMenu({ product, ref })
 	const versionMenu = versionsToMenu(product, ref, versions)
