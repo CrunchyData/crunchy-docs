@@ -152,7 +152,7 @@ async function getRedirectFiles(): Promise<string> {
 		}
 	}
 
-	return redirects.join('/n')
+	return redirects.join('\n')
 }
 
 function getRedirectsMiddleware({
@@ -165,7 +165,6 @@ function getRedirectsMiddleware({
 		.split('\n')
 		.map((line, lineNumber) => {
 			if (!line.trim() || line.startsWith('#')) return null
-
 			let methods, from, to
 			const [one, two, three] = line
 				.split(' ')
