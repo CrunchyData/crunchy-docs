@@ -70,7 +70,7 @@ export function versionsToMenu(
 ): NonEmptyZipperObj<NavLink> | null {
 	const sorted = semver.rsort(versions).map((v, i) => ({
 		label: i === 0 ? `${v} (latest)` : v,
-		to: `/${product}/${v}`,
+		to: `/${product}/${i === 0 ? 'latest' : v}`,
 	}))
 	const zipped = fromArray(sorted)
 
