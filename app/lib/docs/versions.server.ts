@@ -77,5 +77,5 @@ export function versionsToMenu(
 	if (isEmpty(zipped)) return null
 	return ref === 'latest'
 		? zipped
-		: find<NavLink>(zipped, ({ to }) => to === ref)
+		: find<NavLink>(zipped, ({ label }) => label === ref)
 }
