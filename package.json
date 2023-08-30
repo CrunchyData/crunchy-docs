@@ -19,8 +19,9 @@
     "typecheck": "tsc",
     "validate": "run-p lint typecheck test",
     "lint-staged": "lint-staged",
-    "build-crd": "ts-node --esm scripts/crd-builder/index.ts /Users/wking/sites/crunchy/savannah/config/crd/bases /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.2/references/crd",
-    "migrate-docs": "ts-node --esm scripts/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.2"
+    "build-crd": "ts-node --esm scripts/crd-builder/index.ts /Users/wking/sites/crunchy/savannah/config/crd/bases /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.0/references/crd",
+    "migrate-docs": "ts-node --esm scripts/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.0",
+    "build-config": "ts-node --esm scripts/config-builder/index.ts /Users/wking/sites/crunchy/savannah/docs/config.toml /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.0"
   },
   "lint-staged": {
     "*.mdx": "npm run lint:files"
@@ -129,6 +130,7 @@
     "prettier-plugin-organize-imports": "^3.2.2",
     "prettier-plugin-tailwindcss": "^0.2.8",
     "tailwindcss": "^3.3.2",
+    "toml": "^3.0.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^3.12.7",

@@ -36,6 +36,20 @@ async function transform(rootPath: string) {
 				// Replace the search value with the replace value in the chunk
 				let stringChunk = chunk.toString()
 
+				// Adding missing line break from source
+				stringChunk = stringChunk.replace(
+					'### Step 2: Install PGO, the Postgres Operator',
+					'\n### Step 2: Install PGO, the Postgres Operator',
+				)
+				stringChunk = stringChunk.replace(
+					'All Pods now have `enableServiceLinks` set to `false` in order to ensure injected environment variables do not conflict with the various applications running within.',
+					'\nAll Pods now have `enableServiceLinks` set to `false` in order to ensure injected environment variables do not conflict with the various applications running within.',
+				)
+				stringChunk = stringChunk.replace(
+					/```\n{{% \/notice %}}/gm,
+					'```\n\n{{% /notice %}}',
+				)
+
 				stringChunk = replaceBr(stringChunk)
 				stringChunk = replaceParams(stringChunk)
 				stringChunk = replaceRefs(stringChunk, filePath!)
