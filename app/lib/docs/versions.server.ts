@@ -50,7 +50,7 @@ export async function getProductVersions({
 	return versionsCache.fetch(`${isPrivate ? 'private' : 'public'}:${product}`)
 }
 
-const versionValidator = z.array(z.string().regex(/\d\.\d\.\d/)).nonempty()
+const versionValidator = z.array(z.string().regex(/\d(\.\d){0,2}/)).nonempty()
 
 async function getAllVersions({
 	product,
@@ -68,7 +68,7 @@ export function versionsToMenu(
 	ref: string,
 	versions: string[],
 ): NonEmptyZipperObj<NavLink> | null {
-	const sorted = semver.rsort(versions).map((v, i) => ({
+	const sorted = versions.map((v, i) => ({
 		label: i === 0 ? `${v} (latest)` : v,
 		to: `/${product}/${i === 0 ? 'latest' : v}`,
 	}))
