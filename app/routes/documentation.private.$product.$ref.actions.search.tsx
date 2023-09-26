@@ -7,6 +7,7 @@ function getBodyContext(body: string, term: string) {
 	const numContextWords = 2
 	const searchTermRegex = new RegExp(
 		`(?:\\s?(?:[\\w]+)\\s?){0,${numContextWords}}${term}(?:\\s?(?:[\\w]+)\\s?){0,${numContextWords}}`,
+		'i',
 	)
 	const excerptRegex = /^(\w+(?:\s+\w+){0,5})/
 

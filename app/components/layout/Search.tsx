@@ -15,13 +15,17 @@ import {
 function showExcerpt(body: string | null, query: string) {
 	if (body === null) return '...'
 
-	if (!body.includes(query)) return `${body}...`
+	const startIndex = body.toLowerCase().indexOf(query.toLowerCase())
+	if (startIndex === -1) return `${body}...`
 
-	const [before, after] = body.split(query)
+	const endIndex = startIndex + query.length
+	const before = body.slice(0, startIndex)
+	const matched = body.slice(startIndex, endIndex)
+	const after = body.slice(endIndex)
 	return (
 		<>
 			...{before}
-			<strong>{query}</strong>
+			<strong>{matched}</strong>
 			{after}...
 		</>
 	)
