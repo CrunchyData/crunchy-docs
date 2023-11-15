@@ -440,8 +440,8 @@ function CloseIcon(props: React.ComponentProps<'svg'>) {
 
 function Logo() {
 	return (
-		<Link
-			to="/"
+		<a
+			href="https://access.crunchydata.com/documentation"
 			className="inline-block shrink-0 rounded-full focus:!ring-white/50 focus:!ring-offset-crunchy"
 			aria-label="Home"
 		>
