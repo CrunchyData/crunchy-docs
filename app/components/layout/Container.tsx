@@ -551,6 +551,6 @@ function Logo() {
 					/>
 				</g>
 			</svg>
-		</Link>
+		</a>
 	)
 }
