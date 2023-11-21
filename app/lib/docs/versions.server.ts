@@ -17,6 +17,18 @@ export function getLatestVersion(versions: string[]) {
 	)[0]
 }
 
+const versionValidator = z.string().regex(/\d(\.\d){0,2}/)
+const oldVersionJsonValidator = z.array(versionValidator).nonempty()
+const newVersionJsonValidator = z
+	.array(z.object({ version: versionValidator, isPublic: z.boolean() }))
+	.nonempty()
+const versionJsonValidator = z.union([
+	oldVersionJsonValidator,
+	newVersionJsonValidator,
+])
+
+export type Versions = z.infer<typeof versionJsonValidator>
+
 declare global {
 	var versionsCache: LRUCache<string, string[]>
 }
@@ -45,12 +57,10 @@ export async function getProductVersions({
 	isPrivate?: boolean
 }) {
 	if (NO_CACHE) {
-		getAllVersions({ product, isPrivate })
+		return getAllVersions({ product, isPrivate })
 	}
 	return versionsCache.fetch(`${isPrivate ? 'private' : 'public'}:${product}`)
 }
-
-const versionValidator = z.array(z.string().regex(/\d(\.\d){0,2}/)).nonempty()
 
 async function getAllVersions({
 	product,
@@ -58,9 +68,24 @@ async function getAllVersions({
 }: {
 	product: string
 	isPrivate?: boolean
-}): Promise<z.infer<typeof versionValidator>> {
+}): Promise<string[]> {
 	const base = isPrivate ? privateRootPath(product) : rootPath(product)
-	return getJsonFile(path.join(base, 'versions.json'), versionValidator.parse)
+	const versions = await getJsonFile(
+		path.join(base, 'versions.json'),
+		versionJsonValidator.parse,
+	)
+
+	const isNewSchema = typeof versions[0] !== 'string'
+
+	if (!isNewSchema) return versions as string[]
+
+	return isPrivate
+		? (versions as z.infer<typeof newVersionJsonValidator>).map(
+				({ version }) => version,
+		  )
+		: (versions as z.infer<typeof newVersionJsonValidator>).flatMap(
+				({ isPublic, version }) => (isPublic ? [version] : []),
+		  )
 }
 
 export function versionsToMenu(

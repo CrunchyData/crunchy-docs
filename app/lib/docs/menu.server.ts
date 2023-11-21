@@ -71,6 +71,7 @@ export async function getMenuFromDir({
 	isPrivate?: boolean
 }): Promise<NavItem[]> {
 	const docs: NavTree[] = []
+	console.log(contentPath(product, ref))
 	await walk(contentPath(product, ref), async filepath => {
 		if (!filepath.endsWith('.mdx')) return
 		const mdx = await fs.readFile(filepath, 'utf-8')
