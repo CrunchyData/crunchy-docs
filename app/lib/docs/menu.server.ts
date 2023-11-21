@@ -71,15 +71,21 @@ export async function getMenuFromDir({
 	isPrivate?: boolean
 }): Promise<NavItem[]> {
 	const docs: NavTree[] = []
-	console.log(contentPath(product, ref))
 	await walk(contentPath(product, ref), async filepath => {
 		if (!filepath.endsWith('.mdx')) return
 		const mdx = await fs.readFile(filepath, 'utf-8')
-		const { title, weight, draft } = parseAttrs(mdx)
+		const { title, weight, draft, show } = parseAttrs(mdx)
 		const slug = makeSlug({ filepath, product, ref })
 
 		// not show drafts in menu
 		if (draft) return
+		// not show private in public and vice versa
+		if (
+			(isPrivate && show === 'public') ||
+			(!isPrivate && show === 'private')
+		) {
+			return
+		}
 
 		docs.push({
 			title,
