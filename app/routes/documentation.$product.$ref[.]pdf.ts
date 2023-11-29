@@ -1,6 +1,9 @@
 import type { LoaderArgs } from '@remix-run/node'
-import { redirect } from '@remix-run/node'
+import fs from 'fs/promises'
+import path from 'path'
+import { pdf } from 'remix-utils/responses'
 import invariant from 'tiny-invariant'
+import { contentPath } from '~/lib/docs/fs.server.ts'
 
 export { headers } from '~/components/layout/Content.tsx'
 
@@ -8,7 +11,10 @@ export async function loader({ params }: LoaderArgs) {
 	let { product, ref, '*': splat } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
-	return redirect(`documentation/${product}/${ref}`)
+	const pdfResponse = await fs.readFile(
+		path.join(contentPath(product, ref), 'documentation.pdf'),
+	)
+	return pdf(pdfResponse)
 
 	// const versions = await getProductVersions({ product })
 

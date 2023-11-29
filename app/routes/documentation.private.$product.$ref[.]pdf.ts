@@ -1,10 +1,9 @@
 import type { LoaderArgs } from '@remix-run/node'
-import { redirect } from '@remix-run/node'
+import fs from 'fs/promises'
+import path from 'path'
+import { pdf } from 'remix-utils/responses'
 import invariant from 'tiny-invariant'
-import { validateParams } from '~/lib/docs/params.server.ts'
-import { renderPDF } from '~/lib/docs/pdf.server.tsx'
-import { getProductVersions } from '~/lib/docs/versions.server.ts'
-import { CACHE_CONTROL } from '~/utils/http.server.ts'
+import { privateContentPath } from '~/lib/docs/fs.server.ts'
 
 export { headers } from '~/components/layout/Content.tsx'
 
@@ -13,22 +12,27 @@ export async function loader({ params }: LoaderArgs) {
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
 
-	const versions = await getProductVersions({ product, isPrivate: true })
+	const pdfResponse = await fs.readFile(
+		path.join(privateContentPath(product, ref), 'documentation.pdf'),
+	)
+	return pdf(pdfResponse)
 
-	let betterUrl = validateParams(versions, ['latest'], {
-		product,
-		ref,
-		'*': splat,
-	})
+	// const versions = await getProductVersions({ product, isPrivate: true })
 
-	if (betterUrl) throw redirect('/' + betterUrl)
+	// let betterUrl = validateParams(versions, ['latest'], {
+	// 	product,
+	// 	ref,
+	// 	'*': splat,
+	// })
 
-	const body = await renderPDF({ product, ref, isPrivate: true })
+	// if (betterUrl) throw redirect('/' + betterUrl)
 
-	const headers = new Headers({
-		'Content-Type': 'application/pdf',
-		'Cache-Control': CACHE_CONTROL.doc,
-	})
+	// const body = await renderPDF({ product, ref, isPrivate: true })
 
-	return new Response(body, { status: 200, headers })
+	// const headers = new Headers({
+	// 	'Content-Type': 'application/pdf',
+	// 	'Cache-Control': CACHE_CONTROL.doc,
+	// })
+
+	// return new Response(body, { status: 200, headers })
 }

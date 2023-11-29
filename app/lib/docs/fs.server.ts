@@ -6,24 +6,17 @@ const __dirname = dirname(import.meta.url).replace('file://', '')
 
 export function contentPath(product: string, ref: string) {
 	const publicProduct = getPublicProductSlug(product)
-	if (ref === 'latest') {
-		if (process.env.PGO_PUBLIC_PATH) {
-			return join(process.env.PGO_PUBLIC_PATH, 'documentation')
-		}
-		return join(__dirname, '../', 'documentation', publicProduct, ref)
-	} else {
-		if (process.env.PGO_PRIVATE_PATH) {
-			return join(process.env.PGO_PRIVATE_PATH, 'public', ref)
-		}
-
-		return join(__dirname, '../', 'documentation', publicProduct, ref)
+	if (process.env.PGO_PRIVATE_PATH) {
+		return join(process.env.PGO_PRIVATE_PATH, 'public', ref)
 	}
+
+	return join(__dirname, '../', 'documentation', publicProduct, ref)
 }
 
 export function rootPath(product: string) {
 	const publicProduct = getPublicProductSlug(product)
-	if (process.env.PGO_PUBLIC_PATH) {
-		return process.env.PGO_PUBLIC_PATH
+	if (process.env.PGO_PRIVATE_PATH) {
+		return process.env.PGO_PRIVATE_PATH
 	}
 	return join(__dirname, '../', 'documentation', publicProduct)
 }

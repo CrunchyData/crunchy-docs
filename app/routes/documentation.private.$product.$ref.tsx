@@ -56,12 +56,13 @@ export function useDocLayoutLoaderData(): SerializeFrom<typeof loader> {
 }
 
 export default function DocLayout() {
-	const { menu, product, versions, links, basePath } =
+	const { menu, product, versions, links, basePath, ref } =
 		useLoaderData<typeof loader>()
 	return (
 		<Container
 			menu={menu}
 			product={product}
+			productRef={ref}
 			versions={versions}
 			links={links}
 			basePath={basePath}

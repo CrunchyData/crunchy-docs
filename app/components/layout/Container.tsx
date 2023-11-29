@@ -12,6 +12,7 @@ import * as Zipper from '~/utils/zipper.ts'
 type ContainerProps = {
 	menu: NavItem[]
 	product: TNavLink
+	productRef: string
 	versions: Zipper.NonEmptyZipperObj<TNavLink> | null
 	links: TNavLink[]
 	basePath: string
@@ -22,6 +23,7 @@ export default function Container({
 	children,
 	menu,
 	product,
+	productRef,
 	versions,
 	links,
 	basePath,
@@ -29,9 +31,8 @@ export default function Container({
 }: React.PropsWithChildren<ContainerProps>) {
 	const [isSearching, setIsSearching] = React.useState(false)
 	const [os, setOs] = React.useState<string | null>('macos')
-	const base = product.to.replaceAll('/', '-').replace(/^-/, '')
-	const pdfLink = `/documentation/pdfs/${base}-${
-		isPrivate ? 'private' : 'public'
+	const pdfLink = `/documentation${isPrivate ? '/private' : ''}${
+		product.to
 	}.pdf`
 
 	React.useEffect(() => {
