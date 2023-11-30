@@ -24,6 +24,7 @@ export async function loader({ params }: LoaderArgs) {
 
 	const versions = await getProductVersions({ product })
 
+	// Redirect latest to latest version
 	if (ref === 'latest') {
 		throw redirect(
 			`/documentation/${product}/${versions[0]}${splat ? `/${splat}` : ''}`,
