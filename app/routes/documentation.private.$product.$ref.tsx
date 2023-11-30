@@ -24,6 +24,12 @@ export async function loader({ params }: LoaderArgs) {
 
 	const versions = await getProductVersions({ product, isPrivate: true })
 
+	if (ref === 'latest') {
+		throw redirect(
+			`/documentation/${product}/${versions[0]}${splat ? `/${splat}` : ''}`,
+		)
+	}
+
 	let betterUrl = validateParams(versions, ['latest'], {
 		product,
 		ref,
