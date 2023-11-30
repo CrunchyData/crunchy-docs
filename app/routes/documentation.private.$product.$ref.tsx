@@ -26,7 +26,7 @@ export async function loader({ params }: LoaderArgs) {
 
 	if (ref === 'latest') {
 		throw redirect(
-			`/documentation/${product}/${versions[0]}${splat ? `/${splat}` : ''}`,
+			`/documentation/private/${product}/${versions[0]}${splat ? `/${splat}` : ''}`,
 		)
 	}
 
