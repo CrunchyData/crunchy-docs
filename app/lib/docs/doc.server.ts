@@ -37,51 +37,56 @@ global.docCache ??= new LRUCache<string, Doc | undefined>({
 	noDeleteOnFetchRejection: true,
 	fetchMethod: async key => {
 		console.log('Fetching fresh doc', key)
-		const [access, product, ref, slug] = key.split(':')
-		return getFreshDoc({ product, ref, slug, isPrivate: access === 'private' })
+		const [access, product, version, slug] = key.split(':')
+		return getFreshDoc({
+			product,
+			version,
+			slug,
+			isPrivate: access === 'private',
+		})
 	},
 })
 
 export async function getDoc({
 	product,
-	ref,
+	version,
 	slug,
 	isPrivate = false,
 }: {
 	product: string
-	ref: string
+	version: string
 	slug: string
 	isPrivate?: boolean
 }): Promise<Doc | undefined> {
 	if (NO_CACHE) {
-		return getFreshDoc({ product, ref, slug, isPrivate })
+		return getFreshDoc({ product, slug, version, isPrivate })
 	}
 
 	if (isPrivate) {
-		const key = `private:${product}:${ref}:${slug}`
+		const key = `private:${product}:${version}:${slug}`
 		const doc = await docCache.fetch(key)
 		if (doc) return doc
 	}
 
-	const key = `public:${product}:${ref}:${slug}`
+	const key = `public:${product}:${version}:${slug}`
 	const doc = await docCache.fetch(key)
 	return doc
 }
 
 async function getFreshDoc({
 	product,
-	ref,
+	version,
 	slug,
 	isPrivate = false,
 }: {
 	product: string
-	ref: string
+	version: string
 	slug: string
 	isPrivate?: boolean
 }) {
 	const [mdx, config] = await Promise.all([
-		getDocFromDir({ product, ref, slug, isPrivate }),
-		getConfig({ product, ref, isPrivate }),
+		getDocFromDir({ product, version, slug, isPrivate }),
+		getConfig({ product, version, isPrivate }),
 	])
 	if (!mdx) return undefined
 	return parseMdx(replaceConfigVars(mdx, config))
@@ -89,7 +94,7 @@ async function getFreshDoc({
 
 export async function getDocFromDir(args: {
 	product: string
-	ref: string
+	version: string
 	slug: string
 	isPrivate?: boolean
 }) {
@@ -107,17 +112,17 @@ export async function getDocFromDir(args: {
 
 function getFilename({
 	product,
-	ref,
+	version,
 	slug,
 	isPrivate = false,
 }: {
 	product: string
-	ref: string
+	version: string
 	slug: string
 	isPrivate?: boolean
 }) {
 	if (isPrivate) {
-		let filePath = path.join(privateContentPath(product, ref), slug)
+		let filePath = path.join(privateContentPath(product, version), slug)
 		console.log(`Checking if filepath exists: ${filePath}`)
 		if (existsSync(`${filePath}.mdx`)) return `${filePath}.mdx`
 
@@ -126,7 +131,7 @@ function getFilename({
 		if (existsSync(`${filePath}.mdx`)) return `${filePath}.mdx`
 	}
 
-	let filePath = path.join(contentPath(product, ref), slug)
+	let filePath = path.join(contentPath(product, version), slug)
 	console.log(`Checking if filepath exists: ${filePath}`)
 	if (existsSync(`${filePath}.mdx`)) return `${filePath}.mdx`
 
@@ -134,22 +139,22 @@ function getFilename({
 	console.log(`Checking if filepath exists: ${filePath}`)
 	if (existsSync(`${filePath}.mdx`)) return `${filePath}.mdx`
 
-	throw Error(`This file doesn't exists: ${product}/${ref}/${slug}`)
+	throw Error(`This file doesn't exists: ${product}/${version}/${slug}`)
 }
 
 const configValidator = z.record(z.string(), z.string())
 
 export async function getConfig({
 	product,
-	ref,
+	version,
 	isPrivate,
 }: {
 	product: string
-	ref: string
+	version: string
 	isPrivate?: boolean
 }): Promise<Record<string, string>> {
 	const base = isPrivate
-		? privateContentPath(product, ref)
-		: contentPath(product, ref)
+		? privateContentPath(product, version)
+		: contentPath(product, version)
 	return getJsonFile(path.join(base, 'config.json'), configValidator.parse)
 }

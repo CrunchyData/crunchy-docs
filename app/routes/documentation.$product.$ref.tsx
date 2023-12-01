@@ -23,13 +23,7 @@ export async function loader({ params }: LoaderArgs) {
 	invariant(ref, 'expected `params.ref`')
 
 	const versions = await getProductVersions({ product })
-
-	// Redirect latest to latest version
-	if (ref === 'latest') {
-		throw redirect(
-			`/documentation/${product}/${versions[0]}${splat ? `/${splat}` : ''}`,
-		)
-	}
+	const version = ref === 'latest' ? versions[0] : ref
 
 	let betterUrl = validateParams(versions, ['latest'], {
 		product,
@@ -39,7 +33,7 @@ export async function loader({ params }: LoaderArgs) {
 
 	if (betterUrl) throw redirect('/documentation/' + betterUrl)
 
-	const menu = await getMenu({ product, ref })
+	const menu = await getMenu({ product, version, ref })
 	const versionMenu = versionsToMenu(product, ref, versions)
 	const { name, links } = await getProductData({ product })
 

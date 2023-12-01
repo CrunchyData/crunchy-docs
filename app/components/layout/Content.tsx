@@ -35,6 +35,7 @@ import TableOfContents from '~/components/layout/TableOfContents.tsx'
 import { getDoc } from '~/lib/docs/doc.server.ts'
 import { type NavItem } from '~/lib/docs/menu.server.ts'
 import { getBreadcrumbs, getChildren, getPagination } from '~/lib/docs/menu.ts'
+import { getProductVersions } from '~/lib/docs/versions.server.ts'
 import { NavLink } from '~/types.ts'
 import { CACHE_CONTROL } from '~/utils/http.server.ts'
 import { removeEndSlashes } from '~/utils/removeEndSlashes.ts'
@@ -46,9 +47,12 @@ export async function publicLoader({ params }: LoaderArgs) {
 
 	console.log(`Fetching public doc for: ${splat}`)
 
+	const versions = await getProductVersions({ product })
+	const version = ref === 'latest' ? versions[0] : ref
+
 	const doc = await getDoc({
 		product,
-		ref,
+		version,
 		slug: splat || 'index',
 	})
 
@@ -82,9 +86,12 @@ export async function privateLoader({ params }: LoaderArgs) {
 
 	console.log(`Fetching private doc for: ${splat}`)
 
+	const versions = await getProductVersions({ product, isPrivate: true })
+	const version = ref === 'latest' ? versions[0] : ref
+
 	const doc = await getDoc({
 		product,
-		ref,
+		version,
 		slug: splat || 'index',
 		isPrivate: true,
 	})

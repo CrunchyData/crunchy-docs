@@ -7,17 +7,19 @@ import { contentPath, privateContentPath } from './fs.server.ts'
 export function makeSlug({
 	filepath,
 	product,
-	ref,
+	version,
 	isPrivate,
 }: {
 	filepath: string
 	product: string
-	ref: string
+	version: string
 	isPrivate?: boolean
 }): string {
 	return filepath
 		.replace(
-			isPrivate ? privateContentPath(product, ref) : contentPath(product, ref),
+			isPrivate
+				? privateContentPath(product, version)
+				: contentPath(product, version),
 			'',
 		)
 		.replace(/\.mdx$/, '')

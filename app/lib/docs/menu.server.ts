@@ -33,11 +33,12 @@ global.menuCache ??= new LRUCache<string, NavItem[]>({
 	ttl: NO_CACHE ? 1 : 300000, // 5 minutes
 	allowStale: !NO_CACHE,
 	noDeleteOnFetchRejection: true,
-	fetchMethod: async cacheKey => {
-		let [access, product, ref] = cacheKey.split(':')
+	fetchMethod: async (cacheKey, _stale, { context }) => {
+		let [access, product, version] = cacheKey.split(':')
 		let menu = await getMenuFromDir({
 			product,
-			ref,
+			version,
+			ref: context.ref,
 			isPrivate: access === 'private',
 		})
 		return menu
@@ -47,15 +48,20 @@ global.menuCache ??= new LRUCache<string, NavItem[]>({
 export async function getMenu({
 	product,
 	ref,
+	version,
 	isPrivate = false,
 }: {
 	product: string
 	ref: string
+	version: string
 	isPrivate?: boolean
 }) {
 	return NO_CACHE
-		? getMenuFromDir({ product, ref, isPrivate })
-		: menuCache.fetch(`${isPrivate ? 'private' : 'public'}:${product}:${ref}`)
+		? getMenuFromDir({ product, version, ref, isPrivate })
+		: menuCache.fetch(
+				`${isPrivate ? 'private' : 'public'}:${product}:${version}`,
+				{ fetchContext: { ref } },
+		  )
 }
 
 /**
@@ -63,19 +69,21 @@ export async function getMenu({
  */
 export async function getMenuFromDir({
 	product,
+	version,
 	ref,
 	isPrivate = false,
 }: {
 	product: string
+	version: string
 	ref: string
 	isPrivate?: boolean
 }): Promise<NavItem[]> {
 	const docs: NavTree[] = []
-	await walk(contentPath(product, ref), async filepath => {
+	await walk(contentPath(product, version), async filepath => {
 		if (!filepath.endsWith('.mdx')) return
 		const mdx = await fs.readFile(filepath, 'utf-8')
 		const { title, weight, draft, show } = parseAttrs(mdx)
-		const slug = makeSlug({ filepath, product, ref })
+		const slug = makeSlug({ filepath, product, version })
 
 		// not show drafts in menu
 		if (draft) return
@@ -96,11 +104,11 @@ export async function getMenuFromDir({
 	})
 
 	if (isPrivate) {
-		await walk(privateContentPath(product, ref), async filepath => {
+		await walk(privateContentPath(product, version), async filepath => {
 			if (!filepath.endsWith('.mdx')) return
 			const mdx = await fs.readFile(filepath, 'utf-8')
 			const { title, weight, draft } = parseAttrs(mdx)
-			const slug = makeSlug({ filepath, product, ref, isPrivate })
+			const slug = makeSlug({ filepath, product, version, isPrivate })
 
 			// not show drafts in menu
 			if (draft) return
