@@ -149,12 +149,12 @@ export function Content({
 	product,
 	basePath,
 	version,
-	ref,
+	productRef,
 }: { showTitle?: boolean } & {
 	menu: NavItem[]
 	product: NavLink
 	basePath: string
-	ref: string
+	productRef: string
 	version: string
 }) {
 	const { html, tableOfContents, splat, attributes } =

@@ -17,7 +17,7 @@ export default function DocPage() {
 			product={product}
 			basePath={basePath}
 			version={version}
-			ref={ref}
+			productRef={ref}
 		/>
 	)
 }
