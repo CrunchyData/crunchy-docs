@@ -59,7 +59,9 @@ export async function getProductVersions({
 	if (NO_CACHE) {
 		return getAllVersions({ product, isPrivate })
 	}
-	return versionsCache.fetch(`${isPrivate ? 'private' : 'public'}:${product}`)
+	return versionsCache.fetch(
+		`${isPrivate ? 'private' : 'public'}:${product}:v2`,
+	)
 }
 
 async function getAllVersions({

@@ -63,12 +63,12 @@ export async function getDoc({
 	}
 
 	if (isPrivate) {
-		const key = `private:${product}:${version}:${slug}`
+		const key = `private:${product}:${version}:${slug}:v2`
 		const doc = await docCache.fetch(key)
 		if (doc) return doc
 	}
 
-	const key = `public:${product}:${version}:${slug}`
+	const key = `public:${product}:${version}:${slug}:v2`
 	const doc = await docCache.fetch(key)
 	return doc
 }

@@ -56,7 +56,7 @@ export async function getSearch({
 	return NO_CACHE
 		? getFreshSearch({ product, version, isPrivate })
 		: searchCache.fetch(
-				`${isPrivate ? 'private' : 'public'}:${product}:${version}`,
+				`${isPrivate ? 'private' : 'public'}:${product}:${version}:v2`,
 		  )
 }
 

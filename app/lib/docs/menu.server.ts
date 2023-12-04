@@ -59,7 +59,7 @@ export async function getMenu({
 	return NO_CACHE
 		? getMenuFromDir({ product, version, ref, isPrivate })
 		: menuCache.fetch(
-				`${isPrivate ? 'private' : 'public'}:${product}:${version}`,
+				`${isPrivate ? 'private' : 'public'}:${product}:${version}:v2`,
 				{ fetchContext: { ref } },
 		  )
 }

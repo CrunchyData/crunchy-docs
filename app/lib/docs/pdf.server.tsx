@@ -116,14 +116,14 @@ export async function getPDFData({
 	}
 
 	if (isPrivate) {
-		const key = `private:${product}:${ref}`
+		const key = `private:${product}:${ref}:v2`
 		if (pdfCache.has(key)) {
 			const doc = await pdfCache.fetch(key, { fetchContext: { ref } })
 			return doc
 		}
 	}
 
-	const key = `public:${product}:${ref}`
+	const key = `public:${product}:${ref}:v2`
 	const docs = await pdfCache.fetch(key, { fetchContext: { ref } })
 	return docs
 }

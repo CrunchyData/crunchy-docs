@@ -6,31 +6,32 @@ const __dirname = dirname(import.meta.url).replace('file://', '')
 
 export function contentPath(product: string, ref: string) {
 	const publicProduct = getPublicProductSlug(product)
-	if (process.env.PGO_PRIVATE_PATH) {
-		return join(process.env.PGO_PRIVATE_PATH, 'public', ref)
+	if (process.env.PGO_PATH) {
+		return join(process.env.PGO_PATH, 'public', ref)
 	}
 
 	return join(__dirname, '../', 'documentation', publicProduct, ref)
 }
 
 export function rootPath(product: string) {
-	const publicProduct = getPublicProductSlug(product)
-	if (process.env.PGO_PRIVATE_PATH) {
-		return process.env.PGO_PRIVATE_PATH
+	if (process.env.PGO_PATH) {
+		return process.env.PGO_PATH
 	}
+
+	const publicProduct = getPublicProductSlug(product)
 	return join(__dirname, '../', 'documentation', publicProduct)
 }
 
 export function privateContentPath(product: string, ref: string) {
-	if (process.env.PGO_PRIVATE_PATH) {
-		return join(process.env.PGO_PRIVATE_PATH, 'private', ref)
+	if (process.env.PGO_PATH) {
+		return join(process.env.PGO_PATH, 'private', ref)
 	}
 	return join(__dirname, '../', 'documentation/private', product, ref)
 }
 
 export function privateRootPath(product: string) {
-	if (process.env.PGO_PRIVATE_PATH) {
-		return process.env.PGO_PRIVATE_PATH
+	if (process.env.PGO_PATH) {
+		return process.env.PGO_PATH
 	}
 	return join(__dirname, '../', 'documentation/private', product)
 }
