@@ -5,11 +5,7 @@ export function validateParams(
 ): string | null {
 	let { product, ref, '*': slug } = params
 
-	if (
-		!ref ||
-		ref === tags[0] ||
-		(ref && !tags.includes(ref) && !branches.includes(ref))
-	) {
+	if (!ref || (ref && !tags.includes(ref) && !branches.includes(ref))) {
 		return `${product}/latest${slug ? `/${slug}` : ''}`
 	}
 

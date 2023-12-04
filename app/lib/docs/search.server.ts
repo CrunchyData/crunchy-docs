@@ -37,26 +37,33 @@ global.searchCache ??= new LRUCache<string, SearchCache | undefined>({
 	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
 	allowStale: !NO_CACHE,
 	noDeleteOnFetchRejection: true,
-	fetchMethod: async key => {
+	fetchMethod: async (key, _stale, { context }) => {
 		console.log('Fetching fresh doc', key)
-		const [access, product, version] = key.split(':')
-		return getFreshSearch({ product, version, isPrivate: access === 'private' })
+		const [access, product] = key.split(':')
+		return getFreshSearch({
+			product,
+			version: context.version,
+			isPrivate: access === 'private',
+		})
 	},
 })
 
 export async function getSearch({
 	product,
 	version,
+	ref,
 	isPrivate = false,
 }: {
 	product: string
 	version: string
+	ref: string
 	isPrivate?: boolean
 }): Promise<SearchCache | undefined> {
 	return NO_CACHE
-		? getFreshSearch({ product, version, isPrivate })
+		? getFreshSearch({ product, isPrivate, version })
 		: searchCache.fetch(
-				`${isPrivate ? 'private' : 'public'}:${product}:${version}:v2`,
+				`${isPrivate ? 'private' : 'public'}:${product}:${ref}:2023-12-04`,
+				{ fetchContext: { version } },
 		  )
 }
 

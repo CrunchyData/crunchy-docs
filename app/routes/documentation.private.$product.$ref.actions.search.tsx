@@ -35,7 +35,7 @@ export async function loader({ request, params }: LoaderArgs) {
 	const versions = await getProductVersions({ product, isPrivate: true })
 	const version = ref === 'latest' ? versions[0] : ref
 
-	const search = await getSearch({ product, version, isPrivate: true })
+	const search = await getSearch({ product, version, ref, isPrivate: true })
 	if (!search) return json({ results: [] })
 
 	const searchTerm = lunr.tokenizer(term)

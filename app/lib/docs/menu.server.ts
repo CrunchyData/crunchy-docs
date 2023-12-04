@@ -34,11 +34,11 @@ global.menuCache ??= new LRUCache<string, NavItem[]>({
 	allowStale: !NO_CACHE,
 	noDeleteOnFetchRejection: true,
 	fetchMethod: async (cacheKey, _stale, { context }) => {
-		let [access, product, version] = cacheKey.split(':')
+		let [access, product, ref] = cacheKey.split(':')
 		let menu = await getMenuFromDir({
 			product,
-			version,
-			ref: context.ref,
+			version: context.version,
+			ref,
 			isPrivate: access === 'private',
 		})
 		return menu
@@ -59,8 +59,10 @@ export async function getMenu({
 	return NO_CACHE
 		? getMenuFromDir({ product, version, ref, isPrivate })
 		: menuCache.fetch(
-				`${isPrivate ? 'private' : 'public'}:${product}:${version}:v2`,
-				{ fetchContext: { ref } },
+				`${isPrivate ? 'private' : 'public'}:${product}:${ref}:2023-12-04`,
+				{
+					fetchContext: { version },
+				},
 		  )
 }
 
