@@ -2,6 +2,7 @@ import { json, type LoaderArgs } from '@remix-run/node'
 import lunr from 'lunr'
 import invariant from 'tiny-invariant'
 import { getSearch, SearchDoc } from '~/lib/docs/search.server.ts'
+import { getProductVersions } from '~/lib/docs/versions.server.ts'
 
 function getBodyContext(body: string, term: string) {
 	const numContextWords = 2
@@ -31,7 +32,10 @@ export async function loader({ request, params }: LoaderArgs) {
 	const term = url.searchParams.get('term')
 	if (!term) return json({ results: [] })
 
-	const search = await getSearch({ product, ref })
+	const versions = await getProductVersions({ product })
+	const version = ref === 'latest' ? versions[0] : ref
+
+	const search = await getSearch({ product, version })
 	if (!search) return json({ results: [] })
 
 	const searchTerm = lunr.tokenizer(term)

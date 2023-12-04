@@ -23,13 +23,15 @@ import { replaceConfigVars } from './utils.ts'
 export async function renderPDF({
 	product,
 	ref,
+	version,
 	isPrivate,
 }: {
 	product: string
 	ref: string
+	version: string
 	isPrivate?: boolean
 }) {
-	const docs = await getPDFData({ product, ref, isPrivate })
+	const docs = await getPDFData({ product, ref, version, isPrivate })
 	if (!docs)
 		throw new Error(
 			`No docs found for: ${isPrivate ? 'private/' : ''}${product}/${ref}`,
@@ -82,67 +84,82 @@ let NO_CACHE = process.env.NO_CACHE ?? false
  * still distribute the documents across the CDN.
  */
 global.pdfCache ??= new LRUCache<string, string[] | undefined>({
-	max: 300,
-	ttl: NO_CACHE ? 1 : 1000 * 60 * 5, // 5 minutes
+	max: 1000,
+	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
 	allowStale: !NO_CACHE,
 	noDeleteOnFetchRejection: true,
-	fetchMethod: async key => {
+	fetchMethod: async (key, _stale, { context }) => {
 		console.log('Fetching fresh pdf', key)
-		const [access, product, ref] = key.split(':')
-		return getFreshPDFData({ product, ref, isPrivate: access === 'private' })
+		const [access, product, version] = key.split(':')
+		return getFreshPDFData({
+			product,
+			ref: context.ref,
+			version,
+			isPrivate: access === 'private',
+		})
 	},
 })
 
 export async function getPDFData({
 	product,
 	ref,
+	version,
 	isPrivate = false,
 }: {
 	product: string
 	ref: string
+	version: string
 	isPrivate?: boolean
 }): Promise<string[] | undefined> {
 	if (NO_CACHE) {
-		return getFreshPDFData({ product, ref, isPrivate })
+		return getFreshPDFData({ product, ref, version, isPrivate })
 	}
 
 	if (isPrivate) {
 		const key = `private:${product}:${ref}`
 		if (pdfCache.has(key)) {
-			const doc = await pdfCache.fetch(key)
+			const doc = await pdfCache.fetch(key, { fetchContext: { ref } })
 			return doc
 		}
 	}
 
 	const key = `public:${product}:${ref}`
-	const docs = await pdfCache.fetch(key)
+	const docs = await pdfCache.fetch(key, { fetchContext: { ref } })
 	return docs
 }
 
 async function getFreshPDFData({
 	product,
 	ref,
+	version,
 	isPrivate = false,
 }: {
 	product: string
 	ref: string
+	version: string
 	isPrivate?: boolean
 }): Promise<string[]> {
 	const [menu, config] = await Promise.all([
-		getMenu({ product, ref, isPrivate }),
-		getConfig({ product, ref, isPrivate }),
+		getMenu({ product, ref, version, isPrivate }),
+		getConfig({ product, version, isPrivate }),
 	])
 
 	const docs: string[] = []
 
 	for (let item of menu) {
-		const pdf = await pdfFromItem({ item, product, ref, isPrivate })
+		const pdf = await pdfFromItem({ item, product, ref, version, isPrivate })
 		if (pdf) docs.push(pdf)
 
 		if (!item.children?.length) continue
 
 		for (let child of item.children) {
-			const pdf = await pdfFromItem({ item: child, product, ref, isPrivate })
+			const pdf = await pdfFromItem({
+				item: child,
+				product,
+				version,
+				ref,
+				isPrivate,
+			})
 			if (pdf) docs.push(pdf)
 
 			if (!child.children?.length) continue
@@ -151,6 +168,7 @@ async function getFreshPDFData({
 				const pdf = await pdfFromItem({
 					item: grandchild,
 					product,
+					version,
 					ref,
 					isPrivate,
 				})
@@ -171,17 +189,19 @@ async function pdfFromItem({
 	item,
 	product,
 	ref,
+	version,
 	isPrivate = false,
 }: {
 	item: NavItem
 	product: string
 	ref: string
+	version: string
 	isPrivate?: boolean
 }): Promise<string | null> {
 	const slug = slugToDocKey(item.slug, product, ref)
 	// if (slug !== '/quickstart') return null
 
-	const doc = await getDocFromDir({ product, ref, slug, isPrivate })
+	const doc = await getDocFromDir({ product, version, slug, isPrivate })
 
 	if (!doc || doc.includes('draft: true')) return null
 

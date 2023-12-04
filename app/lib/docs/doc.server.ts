@@ -32,7 +32,7 @@ let NO_CACHE = process.env.NO_CACHE ?? false
 global.docCache ??= new LRUCache<string, Doc | undefined>({
 	// let docCache = new LRUCache<string, Doc | undefined>({
 	max: 300,
-	ttl: NO_CACHE ? 1 : 1000 * 60 * 5, // 5 minutes
+	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
 	allowStale: !NO_CACHE,
 	noDeleteOnFetchRejection: true,
 	fetchMethod: async key => {

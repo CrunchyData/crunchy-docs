@@ -39,7 +39,7 @@ let NO_CACHE = process.env.NO_CACHE ?? false
 global.versionsCache ??= new LRUCache<string, string[]>({
 	// let versionsCache = new LRUCache<string, string[]>({
 	max: 3,
-	ttl: 1000 * 60 * 5, // 5 minutes, so we can see new versions quickly
+	ttl: 1000 * 60 * 60, // 5 minutes, so we can see new versions quickly
 	allowStale: true,
 	noDeleteOnFetchRejection: true,
 	fetchMethod: async key => {

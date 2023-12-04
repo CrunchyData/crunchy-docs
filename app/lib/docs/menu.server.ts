@@ -30,7 +30,7 @@ let NO_CACHE = process.env.NO_CACHE ?? false
 
 global.menuCache ??= new LRUCache<string, NavItem[]>({
 	max: 10,
-	ttl: NO_CACHE ? 1 : 300000, // 5 minutes
+	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
 	allowStale: !NO_CACHE,
 	noDeleteOnFetchRejection: true,
 	fetchMethod: async (cacheKey, _stale, { context }) => {

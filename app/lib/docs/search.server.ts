@@ -34,37 +34,39 @@ let NO_CACHE = process.env.NO_CACHE ?? false
 global.searchCache ??= new LRUCache<string, SearchCache | undefined>({
 	// let docCache = new LRUCache<string, Doc | undefined>({
 	max: 300,
-	ttl: NO_CACHE ? 1 : 1000 * 60 * 20, // 20 minutes
+	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
 	allowStale: !NO_CACHE,
 	noDeleteOnFetchRejection: true,
 	fetchMethod: async key => {
 		console.log('Fetching fresh doc', key)
-		const [access, product, ref] = key.split(':')
-		return getFreshSearch({ product, ref, isPrivate: access === 'private' })
+		const [access, product, version] = key.split(':')
+		return getFreshSearch({ product, version, isPrivate: access === 'private' })
 	},
 })
 
 export async function getSearch({
 	product,
-	ref,
+	version,
 	isPrivate = false,
 }: {
 	product: string
-	ref: string
+	version: string
 	isPrivate?: boolean
 }): Promise<SearchCache | undefined> {
 	return NO_CACHE
-		? getFreshSearch({ product, ref, isPrivate })
-		: searchCache.fetch(`${isPrivate ? 'private' : 'public'}:${product}:${ref}`)
+		? getFreshSearch({ product, version, isPrivate })
+		: searchCache.fetch(
+				`${isPrivate ? 'private' : 'public'}:${product}:${version}`,
+		  )
 }
 
 async function getFreshSearch({
 	product,
-	ref,
+	version,
 	isPrivate = false,
 }: {
 	product: string
-	ref: string
+	version: string
 	isPrivate?: boolean
 }): Promise<SearchCache> {
 	const map: Map<string, SearchDoc> = new Map()
@@ -76,7 +78,7 @@ async function getFreshSearch({
 		boost: 5,
 	})
 
-	await walk(contentPath(product, ref), async filepath => {
+	await walk(contentPath(product, version), async filepath => {
 		if (!filepath.endsWith('.mdx') || filepath.includes('crd.mdx')) return
 		const mdx = await fs.readFile(filepath, 'utf-8')
 		const { title, draft, content } = parseAttrs(mdx)
@@ -90,14 +92,14 @@ async function getFreshSearch({
 		const doc: SearchDoc = {
 			title,
 			body,
-			slug: makeSlug({ filepath, product, ref }),
+			slug: makeSlug({ filepath, product, version }),
 		}
 
 		map.set(doc.slug, doc)
 	})
 
 	if (isPrivate) {
-		await walk(privateContentPath(product, ref), async filepath => {
+		await walk(privateContentPath(product, version), async filepath => {
 			if (!filepath.endsWith('.mdx')) return
 			const mdx = await fs.readFile(filepath, 'utf-8')
 			const { title, draft, content } = parseAttrs(mdx)
@@ -111,7 +113,7 @@ async function getFreshSearch({
 			const doc: SearchDoc = {
 				title,
 				body,
-				slug: makeSlug({ filepath, product, ref, isPrivate }),
+				slug: makeSlug({ filepath, product, version, isPrivate }),
 			}
 
 			map.set(doc.slug, doc)
