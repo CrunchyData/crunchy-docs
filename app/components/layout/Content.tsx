@@ -148,10 +148,14 @@ export function Content({
 	menu,
 	product,
 	basePath,
+	version,
+	ref,
 }: { showTitle?: boolean } & {
 	menu: NavItem[]
 	product: NavLink
 	basePath: string
+	ref: string
+	version: string
 }) {
 	const { html, tableOfContents, splat, attributes } =
 		useLoaderData<typeof publicLoader>()

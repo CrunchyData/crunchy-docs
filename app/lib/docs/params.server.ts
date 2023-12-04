@@ -3,14 +3,14 @@ export function validateParams(
 	branches: string[],
 	params: { product: string; ref?: string; ['*']?: string },
 ): string | null {
-	let { product, ref } = params
+	let { product, ref, '*': slug } = params
 
 	if (
 		!ref ||
 		ref === tags[0] ||
 		(ref && !tags.includes(ref) && !branches.includes(ref))
 	) {
-		return `${product}/latest`
+		return `${product}/latest${slug ? `/${slug}` : ''}`
 	}
 
 	return null

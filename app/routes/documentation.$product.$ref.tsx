@@ -16,6 +16,7 @@ import {
 } from '~/lib/docs/versions.server.ts'
 
 const ROUTE_ID = 'routes/documentation.$product.$ref'
+export { ROUTE_ID as docLayoutRouteId }
 
 export async function loader({ params }: LoaderArgs) {
 	let { product, ref, '*': splat } = params
@@ -43,6 +44,7 @@ export async function loader({ params }: LoaderArgs) {
 		product: { label: name, to: `/${product}/${ref}` },
 		links,
 		ref,
+		version,
 		basePath: '/documentation',
 	})
 }
