@@ -20,6 +20,7 @@ export function getBreadcrumbs({
 	const children: NavLink[] = splat
 		.split('/')
 		.reduce<NavItem[]>((acc, current, i) => {
+			console.log(acc, product.to)
 			if (i === 0) {
 				const item = menu.find(
 					({ slug }) => slug === `${product.to}/${current}`,
