@@ -1,9 +1,9 @@
 import type { LoaderArgs } from '@remix-run/node'
 import fs from 'fs/promises'
 import path from 'path'
-import { pdf } from 'remix-utils/responses'
 import invariant from 'tiny-invariant'
 import { contentPath } from '~/lib/docs/fs.server.ts'
+import { pdf } from '~/utils/responses.server.ts'
 
 export { headers } from '~/components/layout/Content.tsx'
 

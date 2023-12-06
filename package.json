@@ -20,7 +20,7 @@
     "validate": "run-p lint typecheck test",
     "lint-staged": "lint-staged",
     "build-crd": "ts-node --esm scripts/crd-builder/index.ts /Users/wking/sites/crunchy/savannah/config/crd/bases /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-docs/documentation/references/crd/5.0.x",
-    "migrate-docs": "ts-node --esm scripts/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.0",
+    "migrate-docs": "ts-node --esm scripts/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-hardened-postgres-docs/private/16.1",
     "build-config": "ts-node --esm scripts/config-builder/index.ts /Users/wking/sites/crunchy/savannah/docs/config.toml /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.0"
   },
   "lint-staged": {
@@ -73,7 +73,6 @@
     "remark-frontmatter": "^4.0.1",
     "remark-gfm": "^3.0.1",
     "remark-prism": "^1.3.6",
-    "remix-utils": "^7.3.0",
     "semver": "^7.5.1",
     "strip-markdown": "^5.0.1",
     "tiny-invariant": "^1.3.1",
