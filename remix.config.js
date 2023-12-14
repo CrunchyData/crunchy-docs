@@ -3,6 +3,9 @@
  */
 export default {
 	cacheDirectory: './node_modules/.cache/remix',
+	assetsBuildDirectory: 'docs-public/build',
+	serverBuildPath: 'docs-build/index.js',
+	publicPath: '/docs-public/build/',
 	ignoredRouteFiles: ['**/.*', '**/.test.{js,jsx,ts,tsx}'],
 	serverModuleFormat: 'esm',
 	serverPlatform: 'node',
