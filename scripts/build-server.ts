@@ -19,7 +19,7 @@ for (const file of allFiles) {
 	if (/\.(ts|js|tsx|jsx)$/.test(file)) {
 		entries.push(file)
 	} else {
-		const dest = file.replace(here('../server'), here('../server-build'))
+		const dest = file.replace(here('../server'), here('../docs-server-build'))
 		fsExtra.ensureDirSync(path.parse(dest).dir)
 		fsExtra.copySync(file, dest)
 		console.log(`copied: ${file.replace(`${here('../server')}/`, '')}`)
@@ -32,7 +32,7 @@ console.log('building...')
 esbuild
 	.build({
 		entryPoints: glob.sync(globsafe(here('../server/**/*.+(ts|js|tsx|jsx)'))),
-		outdir: here('../server-build'),
+		outdir: here('../docs-server-build'),
 		target: [`node${pkg.engines.node}`],
 		platform: 'node',
 		format: 'esm',

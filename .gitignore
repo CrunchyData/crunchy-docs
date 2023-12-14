@@ -1,10 +1,10 @@
 node_modules
 
-/build
-/public/build
-/public/images
-/public/pdf
-/server-build
+/docs-build
+/docs-public/build
+/docs-public/images
+/docs-public/pdf
+/docs-server-build
 .env
 
 *.local.*
@@ -14,4 +14,4 @@ node_modules
 
 documentation
 /scripts/crd-builder/specs
-/public/documentation
+/docs-public/documentation

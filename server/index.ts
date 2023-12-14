@@ -21,7 +21,7 @@ import {
 } from 'path-to-regexp'
 import { fileURLToPath, pathToFileURL } from 'url'
 
-const BUILD_DIR = path.join(process.cwd(), 'build', 'index.js')
+const BUILD_DIR = path.join(process.cwd(), 'docs-build', 'index.js')
 const BUILD_DIR_FILE_URL = pathToFileURL(BUILD_DIR).href
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -38,13 +38,13 @@ app.disable('x-powered-by')
 
 // Remix fingerprints its assets so we can cache forever.
 app.use(
-	'/build',
-	express.static('public/build', { immutable: true, maxAge: '1y' }),
+	'/docs-public/build',
+	express.static('docs-public/build', { immutable: true, maxAge: '1y' }),
 )
 
 // Everything else (like favicon.ico) is cached for an hour. You may want to be
 // more aggressive with this caching.
-app.use(express.static('public', { maxAge: '1h' }))
+app.use(express.static('docs-public', { maxAge: '1h' }))
 
 morgan.token('url', (req, res) => decodeURIComponent(req.url ?? ''))
 app.use(morgan('tiny'))

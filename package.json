@@ -10,11 +10,11 @@
     "build:server": "tsx ./scripts/build-server.ts",
     "dev": "run-p dev:*",
     "dev:remix": "remix dev -c \"npm run dev-server\" --no-restart",
-    "dev-server": "cross-env MOCKS=true tsx watch --clear-screen=false --ignore \"app/**\" --ignore \"build/**\" --ignore \"node_modules/**\" ./index.js",
+    "dev-server": "cross-env MOCKS=true tsx watch --clear-screen=false --ignore \"app/**\" --ignore \"docs-build/**\" --ignore \"node_modules/**\" ./index.js",
     "format": "prettier --write .",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "lint:files": "ts-node --esm scripts/lint-file-case.ts",
-    "start": "cross-env NODE_ENV=production node .",
+    "start": "cross-env NODE_ENV=production node docs-index.js",
     "test": "vitest",
     "typecheck": "tsc",
     "validate": "run-p lint typecheck test",
@@ -28,10 +28,10 @@
   },
   "eslintIgnore": [
     "/node_modules",
-    "/build",
-    "/public/build",
+    "/docs-build",
+    "/docs-public/build",
     "/playwright-report",
-    "/server-build"
+    "/docs-server-build"
   ],
   "dependencies": {
     "@headlessui/react": "^1.7.14",
