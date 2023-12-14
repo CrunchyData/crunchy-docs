@@ -17,7 +17,6 @@ module.exports = {
 			},
 		],
 		'@typescript-eslint/no-unused-vars': ['warn', { varsIgnorePatter: '^_' }],
-		'no-unused-vars': ['warn', { varsIgnorePatter: '^_' }],
 		'testing-library/no-await-sync-events': 'off',
 		'jest-dom/prefer-in-document': 'off',
 		'@typescript-eslint/no-duplicate-imports': 'warn',
