@@ -2,9 +2,9 @@ node_modules
 
 /content/**/*.mdx
 
-/build
-/public/build
-/server-build
+/docs-build
+/docs-public/build
+/docs-server-build
 .env
 
 /test-results/
