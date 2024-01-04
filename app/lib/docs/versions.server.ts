@@ -3,6 +3,7 @@ import path from 'path'
 import semver from 'semver'
 import { z } from 'zod'
 import { type NavLink } from '~/types.ts'
+import { createCache, NO_CACHE, SALT } from '~/utils/cache.server.ts'
 import {
 	find,
 	fromArray,
@@ -33,20 +34,11 @@ declare global {
 	var versionsCache: LRUCache<string, string[]>
 }
 
-let NO_CACHE = process.env.NO_CACHE ?? false
-
 // global for SS "HMR", we need a better story here
-global.versionsCache ??= new LRUCache<string, string[]>({
-	// let versionsCache = new LRUCache<string, string[]>({
-	max: 3,
-	ttl: 1000 * 60 * 60, // 5 minutes, so we can see new versions quickly
-	allowStale: true,
-	noDeleteOnFetchRejection: true,
-	fetchMethod: async key => {
-		console.log('Fetching fresh versions')
-		let [access, product] = key.split(':')
-		return getAllVersions({ product, isPrivate: access === 'private' })
-	},
+global.versionsCache ??= createCache<string[]>(async key => {
+	console.log('Fetching fresh versions')
+	let [access, product] = key.split(':')
+	return getAllVersions({ product, isPrivate: access === 'private' })
 })
 
 export async function getProductVersions({
@@ -60,7 +52,7 @@ export async function getProductVersions({
 		return getAllVersions({ product, isPrivate })
 	}
 	return versionsCache.fetch(
-		`${isPrivate ? 'private' : 'public'}:${product}:v2`,
+		`${isPrivate ? 'private' : 'public'}:${product}:${SALT}`,
 	)
 }
 

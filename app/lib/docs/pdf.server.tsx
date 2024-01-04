@@ -14,6 +14,7 @@ import LRUCache from 'lru-cache'
 import { getMDXComponent } from 'mdx-bundler/client/index.js'
 import stream from 'node:stream'
 import { useMemo } from 'react'
+import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { removeEndSlashes } from '~/utils/removeEndSlashes.ts'
 import { getConfig, getDocFromDir } from './doc.server.ts'
 import { NavItem, getMenu } from './menu.server.ts'
@@ -74,8 +75,6 @@ declare global {
 	var pdfCache: LRUCache<string, string[] | undefined>
 }
 
-let NO_CACHE = process.env.NO_CACHE ?? false
-
 /**
  * While we're using HTTP caching, we have this memory cache too so that
  * document requests and data request to the same document can do less work for
@@ -83,12 +82,8 @@ let NO_CACHE = process.env.NO_CACHE ?? false
  * let's have simpler and faster deployments with just one origin server, but
  * still distribute the documents across the CDN.
  */
-global.pdfCache ??= new LRUCache<string, string[] | undefined>({
-	max: 1000,
-	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
-	allowStale: !NO_CACHE,
-	noDeleteOnFetchRejection: true,
-	fetchMethod: async (key, _stale, { context }) => {
+global.pdfCache ??= createCache<string[] | undefined>(
+	async (key, _stale, { context }) => {
 		console.log('Fetching fresh pdf', key)
 		const [access, product, version] = key.split(':')
 		return getFreshPDFData({
@@ -98,7 +93,7 @@ global.pdfCache ??= new LRUCache<string, string[] | undefined>({
 			isPrivate: access === 'private',
 		})
 	},
-})
+)
 
 export async function getPDFData({
 	product,
@@ -116,14 +111,14 @@ export async function getPDFData({
 	}
 
 	if (isPrivate) {
-		const key = `private:${product}:${ref}:2023-12-04`
+		const key = `private:${product}:${ref}:${SALT}`
 		if (pdfCache.has(key)) {
 			const doc = await pdfCache.fetch(key, { fetchContext: { ref } })
 			return doc
 		}
 	}
 
-	const key = `public:${product}:${ref}:2023-12-04`
+	const key = `public:${product}:${ref}:${SALT}`
 	const docs = await pdfCache.fetch(key, { fetchContext: { ref } })
 	return docs
 }

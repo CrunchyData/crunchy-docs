@@ -3,6 +3,7 @@ import LRUCache from 'lru-cache'
 import lunr from 'lunr'
 import { remark } from 'remark'
 import strip from 'strip-markdown'
+import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { parseAttrs } from './attrs.server.ts'
 import { contentPath, privateContentPath, walk } from './fs.server.ts'
 import { makeSlug } from './utils.ts'
@@ -22,8 +23,6 @@ declare global {
 	var searchCache: LRUCache<string, SearchCache | undefined>
 }
 
-let NO_CACHE = process.env.NO_CACHE ?? false
-
 /**
  * While we're using HTTP caching, we have this memory cache too so that
  * document requests and data request to the same document can do less work for
@@ -31,13 +30,8 @@ let NO_CACHE = process.env.NO_CACHE ?? false
  * let's have simpler and faster deployments with just one origin server, but
  * still distribute the documents across the CDN.
  */
-global.searchCache ??= new LRUCache<string, SearchCache | undefined>({
-	// let docCache = new LRUCache<string, Doc | undefined>({
-	max: 300,
-	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
-	allowStale: !NO_CACHE,
-	noDeleteOnFetchRejection: true,
-	fetchMethod: async (key, _stale, { context }) => {
+global.searchCache ??= createCache<SearchCache | undefined>(
+	async (key, _stale, { context }) => {
 		console.log('Fetching fresh doc', key)
 		const [access, product] = key.split(':')
 		return getFreshSearch({
@@ -46,7 +40,7 @@ global.searchCache ??= new LRUCache<string, SearchCache | undefined>({
 			isPrivate: access === 'private',
 		})
 	},
-})
+)
 
 export async function getSearch({
 	product,
@@ -62,7 +56,7 @@ export async function getSearch({
 	return NO_CACHE
 		? getFreshSearch({ product, isPrivate, version })
 		: searchCache.fetch(
-				`${isPrivate ? 'private' : 'public'}:${product}:${ref}:2023-12-04`,
+				`${isPrivate ? 'private' : 'public'}:${product}:${ref}:${SALT}`,
 				{ fetchContext: { version } },
 		  )
 }

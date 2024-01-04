@@ -3,6 +3,7 @@ import { readFile } from 'fs/promises'
 import LRUCache from 'lru-cache'
 import path from 'path'
 import { z } from 'zod'
+import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { removeLastSlash } from '~/utils/removeEndSlashes.ts'
 import { type DocAttributes } from './attrs.server.ts'
 import { contentPath, getJsonFile, privateContentPath } from './fs.server.ts'
@@ -20,8 +21,6 @@ declare global {
 	var docCache: LRUCache<string, Doc | undefined>
 }
 
-let NO_CACHE = process.env.NO_CACHE ?? false
-
 /**
  * While we're using HTTP caching, we have this memory cache too so that
  * document requests and data request to the same document can do less work for
@@ -29,22 +28,15 @@ let NO_CACHE = process.env.NO_CACHE ?? false
  * let's have simpler and faster deployments with just one origin server, but
  * still distribute the documents across the CDN.
  */
-global.docCache ??= new LRUCache<string, Doc | undefined>({
-	// let docCache = new LRUCache<string, Doc | undefined>({
-	max: 300,
-	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
-	allowStale: !NO_CACHE,
-	noDeleteOnFetchRejection: true,
-	fetchMethod: async key => {
-		console.log('Fetching fresh doc', key)
-		const [access, product, version, slug] = key.split(':')
-		return getFreshDoc({
-			product,
-			version,
-			slug,
-			isPrivate: access === 'private',
-		})
-	},
+global.docCache ??= createCache<Doc | undefined>(async key => {
+	console.log('Fetching fresh doc', key)
+	const [access, product, version, slug] = key.split(':')
+	return getFreshDoc({
+		product,
+		version,
+		slug,
+		isPrivate: access === 'private',
+	})
 })
 
 export async function getDoc({
@@ -63,12 +55,12 @@ export async function getDoc({
 	}
 
 	if (isPrivate) {
-		const key = `private:${product}:${version}:${slug}:2023-12-04`
+		const key = `private:${product}:${version}:${slug}:${SALT}`
 		const doc = await docCache.fetch(key)
 		if (doc) return doc
 	}
 
-	const key = `public:${product}:${version}:${slug}:2023-12-04`
+	const key = `public:${product}:${version}:${slug}:${SALT}`
 	const doc = await docCache.fetch(key)
 	return doc
 }

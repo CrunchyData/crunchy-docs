@@ -1,11 +1,16 @@
 import invariant from 'tiny-invariant'
 
 const requiredServerEnvs = ['NODE_ENV', 'SESSION_SECRET'] as const
+const allServerEnvs = [
+	...requiredServerEnvs,
+	'NO_CACHE',
+	'CRUNCHY_CACHE_SALT',
+] as const
 
 declare global {
 	namespace NodeJS {
 		interface ProcessEnv
-			extends Record<(typeof requiredServerEnvs)[number], string> {}
+			extends Record<(typeof allServerEnvs)[number], string> {}
 	}
 }
 
