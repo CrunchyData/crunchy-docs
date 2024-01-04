@@ -1,5 +1,6 @@
 import fs from 'fs/promises'
 import LRUCache from 'lru-cache'
+import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { parseAttrs } from './attrs.server.ts'
 import { contentPath, privateContentPath, walk } from './fs.server.ts'
 import { makeSlug } from './utils.ts'
@@ -26,14 +27,8 @@ declare global {
 	var menuCache: LRUCache<string, NavItem[]>
 }
 
-let NO_CACHE = process.env.NO_CACHE ?? false
-
-global.menuCache ??= new LRUCache<string, NavItem[]>({
-	max: 10,
-	ttl: NO_CACHE ? 1 : 1000 * 60 * 60, // 1 hour
-	allowStale: !NO_CACHE,
-	noDeleteOnFetchRejection: true,
-	fetchMethod: async (cacheKey, _stale, { context }) => {
+global.menuCache ??= createCache<NavItem[]>(
+	async (cacheKey, _stale, { context }) => {
 		let [access, product, ref] = cacheKey.split(':')
 		let menu = await getMenuFromDir({
 			product,
@@ -43,7 +38,7 @@ global.menuCache ??= new LRUCache<string, NavItem[]>({
 		})
 		return menu
 	},
-})
+)
 
 export async function getMenu({
 	product,
@@ -59,7 +54,7 @@ export async function getMenu({
 	return NO_CACHE
 		? getMenuFromDir({ product, version, ref, isPrivate })
 		: menuCache.fetch(
-				`${isPrivate ? 'private' : 'public'}:${product}:${ref}:2023-12-04`,
+				`${isPrivate ? 'private' : 'public'}:${product}:${ref}:${SALT}`,
 				{
 					fetchContext: { version },
 				},

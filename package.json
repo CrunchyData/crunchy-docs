@@ -10,7 +10,7 @@
     "build:server": "tsx ./scripts/build-server.ts",
     "dev": "run-p dev:*",
     "dev:remix": "remix dev -c \"npm run dev-server\" --no-restart",
-    "dev-server": "cross-env MOCKS=true tsx watch --clear-screen=false --ignore \"app/**\" --ignore \"docs-build/**\" --ignore \"node_modules/**\" ./index.js",
+    "dev-server": "cross-env MOCKS=true tsx watch --clear-screen=false --ignore \"app/**\" --ignore \"docs-build/**\" --ignore \"node_modules/**\" ./docs-index.js",
     "format": "prettier --write .",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "lint:files": "ts-node --esm scripts/lint-file-case.ts",
