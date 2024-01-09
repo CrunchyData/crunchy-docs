@@ -1,4 +1,4 @@
-import { json, type LoaderArgs } from '@remix-run/node'
+import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import lunr from 'lunr'
 import invariant from 'tiny-invariant'
 import { getSearch, SearchDoc } from '~/lib/docs/search.server.ts'
@@ -23,7 +23,7 @@ function getBodyContext(body: string, term: string) {
 
 export type SearchDocExcerpt = Omit<SearchDoc, 'body'> & { body: string | null }
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
 	let { product, ref } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')

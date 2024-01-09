@@ -5,7 +5,7 @@
  *
  * This is useful to dynamically create a PDF file from a Resource Route.
  * @example
- * export async function loader({ request }: LoaderArgs) {
+ * export async function loader({ request }: LoaderFunctionArgs) {
  *   return pdf(await generatePDF(request.formData()));
  * }
  */

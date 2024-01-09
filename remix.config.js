@@ -12,12 +12,9 @@ export default {
 	tailwind: true,
 	postcss: true,
 	watchPaths: ['./tailwind.config.ts', './content/**/*.mdx'],
+	dev: true,
 	future: {
-		v2_headers: true,
-		v2_meta: true,
-		v2_errorBoundary: true,
-		v2_normalizeFormMethod: true,
-		v2_routeConvention: true,
-		unstable_dev: true,
+		v3_fetcherPersist: true,
+		v3_relativeSplatPath: true,
 	},
 }
