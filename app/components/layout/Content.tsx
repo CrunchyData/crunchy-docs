@@ -1,9 +1,9 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import type {
 	HeadersFunction,
-	LoaderArgs,
-	SerializeFrom,
-	V2_MetaFunction,
+	LoaderFunctionArgs,
+	MetaDescriptor,
+	MetaFunction,
 } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import {
@@ -40,7 +40,7 @@ import { NavLink } from '~/types.ts'
 import { CACHE_CONTROL } from '~/utils/http.server.ts'
 import { removeEndSlashes } from '~/utils/removeEndSlashes.ts'
 
-export async function publicLoader({ params }: LoaderArgs) {
+export async function publicLoader({ params }: LoaderFunctionArgs) {
 	let { product, ref, '*': splat } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
@@ -48,7 +48,8 @@ export async function publicLoader({ params }: LoaderArgs) {
 	console.log(`Fetching public doc for: ${splat}`)
 
 	const versions = await getProductVersions({ product })
-	const version = ref === 'latest' ? versions[0] : ref
+	const isLatest = ref === 'latest'
+	const version = isLatest ? versions[0] : ref
 
 	const doc = await getDoc({
 		product,
@@ -70,6 +71,7 @@ export async function publicLoader({ params }: LoaderArgs) {
 		{
 			...doc,
 			splat: removeEndSlashes(splat || ''),
+			isLatest,
 		},
 		{
 			headers: {
@@ -79,7 +81,7 @@ export async function publicLoader({ params }: LoaderArgs) {
 	)
 }
 
-export async function privateLoader({ params }: LoaderArgs) {
+export async function privateLoader({ params }: LoaderFunctionArgs) {
 	let { product, ref, '*': splat } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
@@ -87,7 +89,8 @@ export async function privateLoader({ params }: LoaderArgs) {
 	console.log(`Fetching private doc for: ${splat}`)
 
 	const versions = await getProductVersions({ product, isPrivate: true })
-	const version = ref === 'latest' ? versions[0] : ref
+	const isLatest = ref === 'latest'
+	const version = isLatest ? versions[0] : ref
 
 	const doc = await getDoc({
 		product,
@@ -110,6 +113,7 @@ export async function privateLoader({ params }: LoaderArgs) {
 		{
 			...doc,
 			splat: removeEndSlashes(splat || ''),
+			isLatest,
 		},
 		{
 			headers: {
@@ -126,23 +130,30 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
 	}
 }
 
-export const meta: V2_MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof publicLoader> = ({ data }) => {
 	if (!data) return [{ title: 'Not Found' }]
-	const { attributes } = data as SerializeFrom<typeof publicLoader>
+	const { attributes, isLatest } = data
 
-	return [
+	const descriptors: MetaDescriptor[] = [
 		{ title: attributes.meta?.title ?? attributes.title },
-		...(attributes.meta?.description
-			? [
-					{
-						name: 'description',
-						content: attributes.meta.description,
-					},
-			  ]
-			: []),
 	]
-}
 
+	if (attributes.meta?.description) {
+		descriptors.push({
+			name: 'description',
+			content: attributes.meta.description,
+		})
+	}
+
+	if (!isLatest) {
+		descriptors.push({
+			name: 'robots',
+			content: 'noindex',
+		})
+	}
+
+	return descriptors
+}
 export function Content({
 	showTitle = false,
 	menu,

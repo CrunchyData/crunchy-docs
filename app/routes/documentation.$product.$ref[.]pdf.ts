@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node'
+import type { LoaderFunctionArgs } from '@remix-run/node'
 import fs from 'fs/promises'
 import path from 'path'
 import invariant from 'tiny-invariant'
@@ -7,7 +7,7 @@ import { pdf } from '~/utils/responses.server.ts'
 
 export { headers } from '~/components/layout/Content.tsx'
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
 	let { product, ref, '*': splat } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')

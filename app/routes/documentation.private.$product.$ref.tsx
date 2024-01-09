@@ -1,7 +1,7 @@
 import {
 	json,
 	redirect,
-	type LoaderArgs,
+	type LoaderFunctionArgs,
 	type SerializeFrom,
 } from '@remix-run/node'
 import { Outlet, useLoaderData, useRouteLoaderData } from '@remix-run/react'
@@ -18,7 +18,7 @@ import {
 const ROUTE_ID = 'routes/documentation.private.$product.$ref'
 export { ROUTE_ID as privateDocLayoutRouteId }
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
 	let { product, ref, '*': splat } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')

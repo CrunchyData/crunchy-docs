@@ -1,6 +1,9 @@
-import type { LoaderFunction, SerializeFrom } from '@remix-run/node'
-import type { RouteMatch } from '@remix-run/react'
+import type { UIMatch } from '@remix-run/react'
 import { useRouteLoaderData } from '@remix-run/react'
+import type {
+	SerializeFrom,
+	ServerRuntimeMetaArgs,
+} from '@remix-run/server-runtime'
 import { invariant } from './tinier-invariant.ts'
 
 interface RouteExports {
@@ -13,7 +16,7 @@ export type RouteID<TExports extends RouteExports> = string & TExports
 export type AnyRouteID = RouteID<RouteExports>
 
 type RouteIDMatch<TRouteID extends AnyRouteID> = Omit<
-	RouteMatch,
+	UIMatch,
 	'data' | 'handle'
 > & {
 	data: SerializeFrom<TRouteID['loader']>
@@ -21,19 +24,19 @@ type RouteIDMatch<TRouteID extends AnyRouteID> = Omit<
 }
 
 export function matchHasId<TRouteID extends AnyRouteID>(routeId: TRouteID) {
-	return (match: RouteMatch): match is RouteIDMatch<TRouteID> =>
+	return (match: UIMatch): match is RouteIDMatch<TRouteID> =>
 		match.id === routeId
 }
 
 export function findMatchOptional<TRouteID extends AnyRouteID>(
-	matches: RouteMatch[],
+	matches: UIMatch[],
 	routeId: TRouteID,
 ) {
 	return matches.find(matchHasId(routeId))
 }
 
 export function findMatch<TRouteID extends AnyRouteID>(
-	matches: RouteMatch[],
+	matches: UIMatch[],
 	routeId: TRouteID,
 ) {
 	const match = findMatchOptional(matches, routeId)
@@ -44,7 +47,7 @@ export function findMatch<TRouteID extends AnyRouteID>(
 export function useRouteIdLoaderDataOptional<TRouteID extends AnyRouteID>(
 	routeId: TRouteID,
 ) {
-	return useRouteLoaderData(routeId) as
+	return useRouteLoaderData<TRouteID['loader']>(routeId) as
 		| SerializeFrom<TRouteID['loader']>
 		| undefined
 }
@@ -67,13 +70,11 @@ export function useRouteIdLoaderData<TRouteID extends AnyRouteID>(
 	return data
 }
 
-export function getMetaParentData<TRouteID extends AnyRouteID>(
-	parentsData: Record<string, LoaderFunction>,
+export function findMetaMatchOptional<TRouteID extends AnyRouteID>(
+	matches: ServerRuntimeMetaArgs['matches'],
 	routeId: TRouteID,
-) {
-	invariant(
-		routeId in parentsData,
-		`Route ID not found in parents data: ${routeId}`,
-	)
-	return parentsData[routeId] as unknown as SerializeFrom<TRouteID['loader']>
+): RouteIDMatch<TRouteID> | undefined {
+	const match = matches.find(match => match.id === routeId)
+	if (match) return match as RouteIDMatch<TRouteID>
+	return undefined
 }

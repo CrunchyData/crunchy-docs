@@ -1,11 +1,11 @@
 import { cssBundleHref } from '@remix-run/css-bundle'
 import {
-	LoaderArgs,
+	LoaderFunctionArgs,
 	json,
 	redirect,
 	type LinksFunction,
+	type MetaFunction,
 	type SerializeFrom,
-	type V2_MetaFunction,
 } from '@remix-run/node'
 import {
 	Links,
@@ -37,14 +37,14 @@ export const links: LinksFunction = () => {
 	].filter(Boolean)
 }
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
 	return [
 		{ title: 'Crunchy Data Documentation' },
 		{ name: 'description', content: 'Documentation for Crunchy Data.' },
 	]
 }
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	let url = new URL(request.url)
 	if (url.pathname.endsWith('/') && url.pathname !== '/') {
 		throw redirect(url.pathname.slice(0, -1) + url.search, 301)
