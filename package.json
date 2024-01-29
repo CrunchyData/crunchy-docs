@@ -37,11 +37,11 @@
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.18",
     "@react-pdf/renderer": "^3.1.12",
-    "@remix-run/css-bundle": "2.4.1",
-    "@remix-run/express": "2.4.1",
-    "@remix-run/node": "2.4.1",
-    "@remix-run/react": "2.4.1",
-    "@remix-run/server-runtime": "2.4.1",
+    "@remix-run/css-bundle": "2.5.1",
+    "@remix-run/express": "2.5.1",
+    "@remix-run/node": "2.5.1",
+    "@remix-run/react": "2.5.1",
+    "@remix-run/server-runtime": "2.5.1",
     "address": "^1.2.2",
     "axios": "^1.4.0",
     "chokidar": "^3.5.3",
@@ -79,10 +79,10 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@remix-run/dev": "2.4.1",
-    "@remix-run/eslint-config": "2.4.1",
-    "@remix-run/serve": "2.4.1",
-    "@remix-run/testing": "2.4.1",
+    "@remix-run/dev": "2.5.1",
+    "@remix-run/eslint-config": "2.5.1",
+    "@remix-run/serve": "2.5.1",
+    "@remix-run/testing": "2.5.1",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.9",
@@ -136,10 +136,10 @@
     "tsx": "^3.12.7",
     "typescript": "^5.1.3",
     "vfile-matter": "^4.0.1",
-    "vite": "^4.3.5",
-    "vite-tsconfig-paths": "^4.2.0",
-    "vitest": "^0.31.0",
-    "vitest-mock-extended": "^1.1.3"
+    "vite": "^5.0.12",
+    "vite-tsconfig-paths": "^4.3.1",
+    "vitest": "^1.2.2",
+    "vitest-mock-extended": "^1.3.1"
   },
   "engines": {
     "node": "18"
