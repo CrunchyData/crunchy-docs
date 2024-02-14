@@ -53,3 +53,14 @@ export function getPublicProductSlug(product: string): string {
 		}?.[product] ?? product
 	)
 }
+
+export type Access = 'public' | 'private' | 'both'
+
+const productAccessMap: Record<string, Access> = {
+	'postgres-operator-private': 'both',
+	'crunchy-ha-postgresql': 'private',
+}
+
+export function getProductAccess(product: string): Access {
+	return productAccessMap?.[product] ?? 'both'
+}

@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 export const docAttributes = z.object({
 	title: z.string(),
+	include: z.boolean().optional(),
 	weight: z.number().optional(),
 	draft: z.boolean().optional().default(false),
 	hideTableOfContents: z.boolean().optional().default(false),
@@ -25,6 +26,7 @@ export function parseAttrs(mdx: string): { content: string } & DocAttributes {
 	const { data, content } = parseYamlHeader(mdx)
 	const {
 		title,
+		include = false,
 		weight,
 		draft = false,
 		hideTableOfContents = false,
@@ -34,6 +36,7 @@ export function parseAttrs(mdx: string): { content: string } & DocAttributes {
 
 	return {
 		title,
+		include,
 		weight,
 		draft,
 		content,

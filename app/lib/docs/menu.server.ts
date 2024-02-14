@@ -3,7 +3,7 @@ import LRUCache from 'lru-cache'
 import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { parseAttrs } from './attrs.server.ts'
 import { contentPath, privateContentPath, walk } from './fs.server.ts'
-import { makeSlug } from './utils.ts'
+import { Access, makeSlug } from './utils.ts'
 
 /*========================
 Product Menu - CACHED
@@ -34,7 +34,7 @@ global.menuCache ??= createCache<NavItem[]>(
 			product,
 			version: context.version,
 			ref,
-			isPrivate: access === 'private',
+			access: access as Access,
 		})
 		return menu
 	},
@@ -44,21 +44,18 @@ export async function getMenu({
 	product,
 	ref,
 	version,
-	isPrivate = false,
+	access = 'public',
 }: {
 	product: string
 	ref: string
 	version: string
-	isPrivate?: boolean
+	access?: Access
 }) {
 	return NO_CACHE
-		? getMenuFromDir({ product, version, ref, isPrivate })
-		: menuCache.fetch(
-				`${isPrivate ? 'private' : 'public'}:${product}:${ref}:${SALT}`,
-				{
-					fetchContext: { version },
-				},
-		  )
+		? getMenuFromDir({ product, version, ref, access })
+		: menuCache.fetch(`${access}:${product}:${ref}:${SALT}`, {
+				fetchContext: { version },
+		  })
 }
 
 /**
@@ -68,47 +65,51 @@ export async function getMenuFromDir({
 	product,
 	version,
 	ref,
-	isPrivate = false,
+	access = 'public',
 }: {
 	product: string
 	version: string
 	ref: string
-	isPrivate?: boolean
+	access?: Access
 }): Promise<NavItem[]> {
 	const docs: NavTree[] = []
-	await walk(contentPath(product, version), async filepath => {
-		if (!filepath.endsWith('.mdx')) return
-		const mdx = await fs.readFile(filepath, 'utf-8')
-		const { title, weight, draft, show } = parseAttrs(mdx)
-		const slug = makeSlug({ filepath, product, version })
 
-		// not show drafts in menu
-		if (draft) return
-		// not show private in public and vice versa
-		if (
-			(isPrivate && show === 'public') ||
-			(!isPrivate && show === 'private')
-		) {
-			return
-		}
+	if (access !== 'private') {
+		await walk(contentPath(product, version), async filepath => {
+			if (!filepath.endsWith('.mdx')) return
+			const mdx = await fs.readFile(filepath, 'utf-8')
+			const { title, weight, draft, show, include } = parseAttrs(mdx)
+			// not show drafts in menu
+			if (draft || include) return
 
-		docs.push({
-			title,
-			weight,
-			slug,
-			children: new Map(),
+			// not show private in public and vice versa
+			if (
+				(access !== 'public' && show === 'public') ||
+				(access === 'public' && show === 'private')
+			) {
+				return
+			}
+
+			const slug = makeSlug({ filepath, product, version })
+
+			docs.push({
+				title,
+				weight,
+				slug,
+				children: new Map(),
+			})
 		})
-	})
+	}
 
-	if (isPrivate) {
+	if (access !== 'public') {
 		await walk(privateContentPath(product, version), async filepath => {
 			if (!filepath.endsWith('.mdx')) return
 			const mdx = await fs.readFile(filepath, 'utf-8')
-			const { title, weight, draft } = parseAttrs(mdx)
-			const slug = makeSlug({ filepath, product, version, isPrivate })
-
+			const { title, weight, draft, include } = parseAttrs(mdx)
 			// not show drafts in menu
-			if (draft) return
+			if (draft || include) return
+
+			const slug = makeSlug({ filepath, product, version, isPrivate: true })
 
 			docs.push({
 				title,

@@ -2,6 +2,7 @@ import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import lunr from 'lunr'
 import invariant from 'tiny-invariant'
 import { getSearch, SearchDoc } from '~/lib/docs/search.server.ts'
+import { getProductAccess } from '~/lib/docs/utils.ts'
 import { getProductVersions } from '~/lib/docs/versions.server.ts'
 
 function getBodyContext(body: string, term: string) {
@@ -28,6 +29,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
 
+	const productAccess = getProductAccess(product)
+
 	const url = new URL(request.url)
 	const term = url.searchParams.get('term')
 	if (!term) return json({ results: [] })
@@ -35,7 +38,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 	const versions = await getProductVersions({ product, isPrivate: true })
 	const version = ref === 'latest' ? versions[0] : ref
 
-	const search = await getSearch({ product, version, ref, isPrivate: true })
+	const search = await getSearch({
+		product,
+		version,
+		ref,
+		access: productAccess,
+	})
 	if (!search) return json({ results: [] })
 
 	const searchTerm = lunr.tokenizer(term)

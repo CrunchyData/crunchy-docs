@@ -6,7 +6,7 @@ import strip from 'strip-markdown'
 import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { parseAttrs } from './attrs.server.ts'
 import { contentPath, privateContentPath, walk } from './fs.server.ts'
-import { makeSlug } from './utils.ts'
+import { Access, makeSlug } from './utils.ts'
 
 export type SearchDoc = {
 	title: string
@@ -37,7 +37,7 @@ global.searchCache ??= createCache<SearchCache | undefined>(
 		return getFreshSearch({
 			product,
 			version: context.version,
-			isPrivate: access === 'private',
+			access: access as Access,
 		})
 	},
 )
@@ -46,29 +46,28 @@ export async function getSearch({
 	product,
 	version,
 	ref,
-	isPrivate = false,
+	access = 'public',
 }: {
 	product: string
 	version: string
 	ref: string
-	isPrivate?: boolean
+	access?: Access
 }): Promise<SearchCache | undefined> {
 	return NO_CACHE
-		? getFreshSearch({ product, isPrivate, version })
-		: searchCache.fetch(
-				`${isPrivate ? 'private' : 'public'}:${product}:${ref}:${SALT}`,
-				{ fetchContext: { version } },
-		  )
+		? getFreshSearch({ product, access, version })
+		: searchCache.fetch(`${access}:${product}:${ref}:${SALT}`, {
+				fetchContext: { version },
+		  })
 }
 
 async function getFreshSearch({
 	product,
 	version,
-	isPrivate = false,
+	access = 'public',
 }: {
 	product: string
 	version: string
-	isPrivate?: boolean
+	access?: Access
 }): Promise<SearchCache> {
 	const map: Map<string, SearchDoc> = new Map()
 	const builder = new lunr.Builder()
@@ -79,27 +78,29 @@ async function getFreshSearch({
 		boost: 5,
 	})
 
-	await walk(contentPath(product, version), async filepath => {
-		if (!filepath.endsWith('.mdx') || filepath.includes('crd.mdx')) return
-		const mdx = await fs.readFile(filepath, 'utf-8')
-		const { title, draft, content } = parseAttrs(mdx)
+	if (access !== 'private') {
+		await walk(contentPath(product, version), async filepath => {
+			if (!filepath.endsWith('.mdx') || filepath.includes('crd.mdx')) return
+			const mdx = await fs.readFile(filepath, 'utf-8')
+			const { title, draft, content } = parseAttrs(mdx)
 
-		const body = cleanExtraCruft(
-			(await remark().use(strip).process(content)).value.toString(),
-		)
+			const body = cleanExtraCruft(
+				(await remark().use(strip).process(content)).value.toString(),
+			)
 
-		if (draft || !body.length) return
+			if (draft || !body.length) return
 
-		const doc: SearchDoc = {
-			title,
-			body,
-			slug: makeSlug({ filepath, product, version }),
-		}
+			const doc: SearchDoc = {
+				title,
+				body,
+				slug: makeSlug({ filepath, product, version }),
+			}
 
-		map.set(doc.slug, doc)
-	})
+			map.set(doc.slug, doc)
+		})
+	}
 
-	if (isPrivate) {
+	if (access !== 'public') {
 		await walk(privateContentPath(product, version), async filepath => {
 			if (!filepath.endsWith('.mdx')) return
 			const mdx = await fs.readFile(filepath, 'utf-8')
@@ -114,7 +115,7 @@ async function getFreshSearch({
 			const doc: SearchDoc = {
 				title,
 				body,
-				slug: makeSlug({ filepath, product, version, isPrivate }),
+				slug: makeSlug({ filepath, product, version, isPrivate: true }),
 			}
 
 			map.set(doc.slug, doc)

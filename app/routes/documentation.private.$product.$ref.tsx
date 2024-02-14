@@ -10,6 +10,7 @@ import Container from '~/components/layout/Container.tsx'
 import { getMenu } from '~/lib/docs/menu.server.ts'
 import { validateParams } from '~/lib/docs/params.server.ts'
 import { getProductData } from '~/lib/docs/product.server.ts'
+import { getProductAccess } from '~/lib/docs/utils.ts'
 import {
 	getProductVersions,
 	versionsToMenu,
@@ -23,6 +24,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
 
+	const productAccess = getProductAccess(product)
+
 	const versions = await getProductVersions({ product, isPrivate: true })
 	const version = ref === 'latest' ? versions[0] : ref
 
@@ -33,8 +36,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 	})
 
 	if (betterUrl) throw redirect('/' + betterUrl)
-
-	const menu = await getMenu({ product, version, ref, isPrivate: true })
+	const menu = await getMenu({ product, version, ref, access: productAccess })
 	const versionMenu = versionsToMenu(product, ref, versions)
 	const { name, links } = await getProductData({ product, isPrivate: true })
 

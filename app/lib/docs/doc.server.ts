@@ -81,7 +81,11 @@ async function getFreshDoc({
 		getConfig({ product, version, isPrivate }),
 	])
 	if (!mdx) return undefined
-	return parseMdx(replaceConfigVars(mdx, config))
+	const docsPath = isPrivate
+		? privateContentPath(product, version)
+		: contentPath(product, version)
+
+	return parseMdx(replaceConfigVars(mdx, config), docsPath)
 }
 
 export async function getDocFromDir(args: {

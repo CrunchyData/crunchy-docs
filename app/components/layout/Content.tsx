@@ -28,6 +28,7 @@ import {
 	MediaRow,
 } from '~/components/docs/MediaRow.tsx'
 import Ref from '~/components/docs/Ref.tsx'
+import { RoleVar } from '~/components/docs/RoleVar.tsx'
 import { ChildHeading, TableLink } from '~/components/docs/Spec.tsx'
 import Tag from '~/components/docs/Tag.tsx'
 import ErrorPage from '~/components/layout/ErrorPage.tsx'
@@ -228,6 +229,7 @@ export function Content({
 								MediaHeading,
 								MediaImage,
 								MediaItem,
+								RoleVar,
 							}}
 						/>
 					) : null}

@@ -16,6 +16,14 @@ export default function Index() {
 							Crunchy Postgres for Kubernetes
 						</Link>
 					</li>
+					<li className="pl-2">
+						<Link
+							className="underline hover:text-primary"
+							to="/documentation/private/crunchy-ha-postgresql/latest"
+						>
+							Crunchy PostgreSQL Automation
+						</Link>
+					</li>
 				</ul>
 			</div>
 		</div>
