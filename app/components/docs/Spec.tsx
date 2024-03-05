@@ -1,4 +1,4 @@
-import { Link, LinkProps, useLocation } from '@remix-run/react'
+import { Link, type LinkProps, useLocation } from '@remix-run/react'
 import type {
 	ComponentPropsWithoutRef,
 	ComponentType,

@@ -9,7 +9,7 @@ import { pdf } from '~/utils/responses.server.ts'
 export { headers } from '~/components/layout/Content.tsx'
 
 export async function loader({ params }: LoaderFunctionArgs) {
-	let { product, ref, '*': splat } = params
+	let { product, ref } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
 

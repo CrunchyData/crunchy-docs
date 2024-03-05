@@ -1,7 +1,7 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import lunr from 'lunr'
 import invariant from 'tiny-invariant'
-import { getSearch, SearchDoc } from '~/lib/docs/search.server.ts'
+import { getSearch, type SearchDoc } from '~/lib/docs/search.server.ts'
 import { getProductVersions } from '~/lib/docs/versions.server.ts'
 
 function getBodyContext(body: string, term: string) {

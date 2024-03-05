@@ -1,6 +1,6 @@
 import { cssBundleHref } from '@remix-run/css-bundle'
 import {
-	LoaderFunctionArgs,
+	type LoaderFunctionArgs,
 	json,
 	redirect,
 	type LinksFunction,

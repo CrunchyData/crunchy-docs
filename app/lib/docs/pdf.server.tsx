@@ -10,16 +10,16 @@ import {
 	renderToStream,
 } from '@react-pdf/renderer'
 import { createReadableStreamFromReadable } from '@remix-run/node'
-import LRUCache from 'lru-cache'
+import type LRUCache from 'lru-cache'
 import { getMDXComponent } from 'mdx-bundler/client/index.js'
 import stream from 'node:stream'
 import { useMemo } from 'react'
 import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { removeEndSlashes } from '~/utils/removeEndSlashes.ts'
 import { getConfig, getDocFromDir } from './doc.server.ts'
-import { NavItem, getMenu } from './menu.server.ts'
+import { type NavItem, getMenu } from './menu.server.ts'
 import { parseMdxToPdf } from './pdf/index.server.ts'
-import { Access, replaceConfigVars } from './utils.ts'
+import { type Access, replaceConfigVars } from './utils.ts'
 
 export async function renderPDF({
 	product,

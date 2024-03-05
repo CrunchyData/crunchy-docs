@@ -2,8 +2,8 @@
 Breadcrumbs - NOT CACHED
 =========================*/
 
-import { NavLink } from '~/types.ts'
-import { NavItem } from './menu.server.ts'
+import { type NavLink } from '~/types.ts'
+import { type NavItem } from './menu.server.ts'
 
 export function getBreadcrumbs({
 	menu,

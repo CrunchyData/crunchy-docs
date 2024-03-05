@@ -1,12 +1,12 @@
 import * as acorn from 'acorn'
-import { Element } from 'hast'
+import { type Element } from 'hast'
 import { isElement } from 'hast-util-is-element'
 import yaml from 'js-yaml'
-import { Root, Text } from 'mdast'
+import { type Root, type Text } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import {
-	MdxJsxFlowElement,
-	MdxJsxTextElement,
+	type MdxJsxFlowElement,
+	type MdxJsxTextElement,
 	mdxJsxFromMarkdown,
 } from 'mdast-util-mdx-jsx'
 import { bundleMDX } from 'mdx-bundler'

@@ -1,6 +1,6 @@
 import { existsSync } from 'fs'
 import { readFile } from 'fs/promises'
-import LRUCache from 'lru-cache'
+import type LRUCache from 'lru-cache'
 import path from 'path'
 import { z } from 'zod'
 import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
@@ -81,9 +81,6 @@ async function getFreshDoc({
 		getConfig({ product, version, isPrivate }),
 	])
 	if (!mdx) return undefined
-	const docsPath = isPrivate
-		? privateContentPath(product, version)
-		: contentPath(product, version)
 
 	return parseMdx(replaceConfigVars(mdx, config))
 }

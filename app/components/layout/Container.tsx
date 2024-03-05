@@ -6,7 +6,7 @@ import { clsx } from 'clsx'
 import * as React from 'react'
 import { SearchPalette } from '~/components/layout/Search.tsx'
 import { type NavItem } from '~/lib/docs/menu.server.ts'
-import { NavLink as TNavLink } from '~/types.ts'
+import { type NavLink as TNavLink } from '~/types.ts'
 import * as Zipper from '~/utils/zipper.ts'
 
 type ContainerProps = {
@@ -199,18 +199,19 @@ function Navigation({
 }) {
 	let { pathname } = useLocation()
 	// Remove home from nav
-	const [_home, ...items] = menu
 	return (
 		<nav className={clsx('mt-8 text-sm', className)}>
 			<ul className="flex flex-col gap-4">
-				{items.map(item => (
-					<Group
-						{...item}
-						pathname={pathname}
-						key={item.slug}
-						basePath={basePath}
-					/>
-				))}
+				{menu.map((item, i) =>
+					i === 0 ? null : (
+						<Group
+							{...item}
+							pathname={pathname}
+							key={item.slug}
+							basePath={basePath}
+						/>
+					),
+				)}
 			</ul>
 		</nav>
 	)
@@ -230,7 +231,7 @@ function Group({
 			pathname.includes(`${basePath}${slug}/`) ||
 				pathname === `${basePath}${slug}`,
 		)
-	}, [pathname, slug])
+	}, [pathname, slug, basePath])
 
 	return (
 		<li>
@@ -288,7 +289,7 @@ function Subgroup({
 			pathname.includes(`${basePath}${slug}/`) ||
 				pathname === `${basePath}${slug}`,
 		)
-	}, [pathname, slug])
+	}, [pathname, slug, basePath])
 
 	return (
 		<li className="relative">

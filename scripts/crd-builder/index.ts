@@ -1,8 +1,8 @@
-import fs, { WriteStream, existsSync, mkdirSync } from 'fs'
+import fs, { existsSync, mkdirSync, type WriteStream } from 'fs'
 import yaml from 'js-yaml'
 import path from 'node:path'
 import { walk } from '../utils.ts'
-import { Schema } from './types.ts'
+import { type Schema } from './types.ts'
 
 function main(input: string, output: string) {
 	if (!existsSync(output)) {

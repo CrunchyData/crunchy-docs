@@ -1,12 +1,12 @@
 import fs from 'fs/promises'
-import LRUCache from 'lru-cache'
+import type LRUCache from 'lru-cache'
 import lunr from 'lunr'
 import { remark } from 'remark'
 import strip from 'strip-markdown'
 import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { parseAttrs } from './attrs.server.ts'
 import { contentPath, privateContentPath, walk } from './fs.server.ts'
-import { Access, makeSlug } from './utils.ts'
+import { type Access, makeSlug } from './utils.ts'
 
 export type SearchDoc = {
 	title: string
