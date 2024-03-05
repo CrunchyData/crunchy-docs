@@ -3,11 +3,9 @@
 		"remix.env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
-		"scripts/test-setup/setup-test-env.ts"
 	],
 	"compilerOptions": {
 		"lib": ["DOM", "DOM.Iterable", "ES2022"],
-		"types": ["vitest/globals"],
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"jsx": "react-jsx",

@@ -48,27 +48,3 @@ jobs:
 
       - name: 🔎 Type check
         run: npm run typecheck --if-present
-
-  # vitest:
-  #   name: ⚡ Vitest
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: ⬇️ Checkout repo
-  #       uses: actions/checkout@v3
-
-  #     - name: ⎔ Setup node
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 18
-
-  #     - name: 📥 Download deps
-  #       uses: bahmutov/npm-install@v1
-
-  #     - name: 🏄 Copy test env vars
-  #       run: cp .env.example .env
-
-  #     - name: 🔄 Generate the API reference YAML
-  #       run: npm run generate:platform-api-yaml
-
-  #     - name: ⚡ Run vitest
-  #       run: npm run test -- --coverage

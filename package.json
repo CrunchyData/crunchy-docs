@@ -15,7 +15,6 @@
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "lint:files": "ts-node --esm scripts/lint-file-case.ts",
     "start": "cross-env NODE_ENV=production node docs-index.js",
-    "test": "vitest",
     "typecheck": "tsc",
     "validate": "run-p lint typecheck test",
     "lint-staged": "lint-staged",
@@ -109,8 +108,6 @@
     "@types/semver": "^7.5.0",
     "@types/testing-library__jest-dom": "^5.14.5",
     "@types/uuid": "^9.0.1",
-    "@vitejs/plugin-react": "^4.0.0",
-    "@vitest/coverage-c8": "^0.31.0",
     "autoprefixer": "^10.4.14",
     "c8": "^7.13.0",
     "eslint": "^8.40.0",
@@ -136,11 +133,7 @@
     "tsconfig-paths": "^4.2.0",
     "tsx": "^3.12.7",
     "typescript": "^5.1.3",
-    "vfile-matter": "^4.0.1",
-    "vite": "^5.0.12",
-    "vite-tsconfig-paths": "^4.3.1",
-    "vitest": "^1.2.2",
-    "vitest-mock-extended": "^1.3.1"
+    "vfile-matter": "^4.0.1"
   },
   "engines": {
     "node": "18"
