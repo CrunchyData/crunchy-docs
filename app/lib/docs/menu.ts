@@ -20,7 +20,6 @@ export function getBreadcrumbs({
 	const children: NavLink[] = splat
 		.split('/')
 		.reduce<NavItem[]>((acc, current, i) => {
-			console.log(acc, product.to)
 			if (i === 0) {
 				const item = menu.find(
 					({ slug }) => slug === `${product.to}/${current}`,
@@ -86,7 +85,6 @@ export function getPagination(nav: NavItem[], path: string): Pagination {
 				const grandChildPagination = nestedPagination(child, path)
 				if (grandChildPagination) {
 					if (!grandChildPagination.next) {
-						console.log(current)
 						if (current.children[grandChildIndex + 1]) {
 							grandChildPagination.next = navItemToLink(
 								current.children[grandChildIndex + 1],

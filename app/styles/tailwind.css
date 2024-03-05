@@ -137,6 +137,14 @@
 	@apply mb-0;
 }
 
+.prose dt {
+	@apply my-1 font-display font-bold;
+}
+
+.prose dd {
+	@apply mb-1 ml-6;
+}
+
 /*========
 PRISM
 =========*/

@@ -85,7 +85,7 @@ async function getFreshDoc({
 		? privateContentPath(product, version)
 		: contentPath(product, version)
 
-	return parseMdx(replaceConfigVars(mdx, config), docsPath)
+	return parseMdx(replaceConfigVars(mdx, config))
 }
 
 export async function getDocFromDir(args: {
