@@ -8,10 +8,10 @@ import { react } from './scripts/test-setup/vitejs-plugin-react.cjs'
 export default defineConfig({
 	plugins: [react(), tsconfigPaths()],
 	test: {
-		include: ['./app/**/*.test.{ts,tsx}', './other/**/*.test.ts'],
+		include: ['./app/**/*.test.{ts,tsx}', './scripts/**/*.test.ts'],
 		globals: true,
 		environment: 'jsdom',
-		setupFiles: ['./other/test-setup/setup-test-env.ts'],
+		setupFiles: ['./scripts/test-setup/setup-test-env.ts'],
 		coverage: {
 			include: ['app/**/*.{ts,tsx}'],
 			all: true,

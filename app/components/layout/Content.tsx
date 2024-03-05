@@ -28,6 +28,7 @@ import {
 	MediaRow,
 } from '~/components/docs/MediaRow.tsx'
 import Ref from '~/components/docs/Ref.tsx'
+import { RoleVar } from '~/components/docs/RoleVar.tsx'
 import { ChildHeading, TableLink } from '~/components/docs/Spec.tsx'
 import Tag from '~/components/docs/Tag.tsx'
 import ErrorPage from '~/components/layout/ErrorPage.tsx'
@@ -36,7 +37,7 @@ import { getDoc } from '~/lib/docs/doc.server.ts'
 import { type NavItem } from '~/lib/docs/menu.server.ts'
 import { getBreadcrumbs, getChildren, getPagination } from '~/lib/docs/menu.ts'
 import { getProductVersions } from '~/lib/docs/versions.server.ts'
-import { NavLink } from '~/types.ts'
+import { type NavLink } from '~/types.ts'
 import { CACHE_CONTROL } from '~/utils/http.server.ts'
 import { removeEndSlashes } from '~/utils/removeEndSlashes.ts'
 
@@ -228,6 +229,7 @@ export function Content({
 								MediaHeading,
 								MediaImage,
 								MediaItem,
+								RoleVar,
 							}}
 						/>
 					) : null}
@@ -280,14 +282,12 @@ export function ErrorBoundary() {
 	console.log(error)
 	let status = 500
 	let message = 'Unknown error'
-	let stack = undefined
 
 	if (isRouteErrorResponse(error)) {
 		status = error.status
 		message = error.data.message
 	} else if (error instanceof Error) {
 		message = error.message
-		stack = error.stack
 	}
 
 	return (

@@ -4,34 +4,47 @@ import { getPublicProductSlug } from './utils.ts'
 
 const __dirname = dirname(import.meta.url).replace('file://', '')
 
+const publicProductPathMap: Record<string, string | undefined> = {
+	'postgres-operator': process.env.PGO_PATH,
+}
+
+const privateProductPathMap: Record<string, string | undefined> = {
+	'postgres-operator-private': process.env.PGO_PATH,
+	'crunchy-ha-postgresql': process.env.AUTOMATION_PATH,
+}
+
 export function contentPath(product: string, ref: string) {
 	const publicProduct = getPublicProductSlug(product)
-	if (process.env.PGO_PATH) {
-		return join(process.env.PGO_PATH, 'public', ref)
+	const localPath = publicProductPathMap?.[publicProduct]
+	if (localPath) {
+		return join(localPath, 'public', ref)
 	}
 
 	return join(__dirname, '../', 'documentation', publicProduct, ref)
 }
 
 export function rootPath(product: string) {
-	if (process.env.PGO_PATH) {
-		return process.env.PGO_PATH
+	const publicProduct = getPublicProductSlug(product)
+	const localPath = publicProductPathMap?.[publicProduct]
+	if (localPath) {
+		return localPath
 	}
 
-	const publicProduct = getPublicProductSlug(product)
 	return join(__dirname, '../', 'documentation', publicProduct)
 }
 
 export function privateContentPath(product: string, ref: string) {
-	if (process.env.PGO_PATH) {
-		return join(process.env.PGO_PATH, 'private', ref)
+	const localPath = privateProductPathMap?.[product]
+	if (localPath) {
+		return join(localPath, 'private', ref)
 	}
 	return join(__dirname, '../', 'documentation/private', product, ref)
 }
 
 export function privateRootPath(product: string) {
-	if (process.env.PGO_PATH) {
-		return process.env.PGO_PATH
+	const localPath = privateProductPathMap?.[product]
+	if (localPath) {
+		return localPath
 	}
 	return join(__dirname, '../', 'documentation/private', product)
 }
@@ -62,6 +75,7 @@ export async function walk(
 	const results = await fs.readdir(path)
 
 	for (let fileOrDirectory of results) {
+		if (fileOrDirectory.startsWith('_')) continue
 		const filePath = join(path, fileOrDirectory)
 		const stat = await fs.stat(filePath)
 

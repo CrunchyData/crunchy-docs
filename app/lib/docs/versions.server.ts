@@ -1,4 +1,4 @@
-import LRUCache from 'lru-cache'
+import type LRUCache from 'lru-cache'
 import path from 'path'
 import semver from 'semver'
 import { z } from 'zod'

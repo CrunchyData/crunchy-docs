@@ -6,9 +6,9 @@ import { Fragment, useEffect, useState } from 'react'
 import { useFetcher, useNavigate } from '@remix-run/react'
 
 import { clsx } from 'clsx'
-import { SearchDoc } from '~/lib/docs/search.server.ts'
+import { type SearchDoc } from '~/lib/docs/search.server.ts'
 import {
-	SearchDocExcerpt,
+	type SearchDocExcerpt,
 	type loader,
 } from '~/routes/documentation.$product.$ref.actions.search.tsx'
 
@@ -57,7 +57,7 @@ export function SearchPalette({
 				}${productPath}/actions/search?term=${query}`,
 			)
 		},
-		[load, query],
+		[load, query, isPrivate, productPath],
 	)
 
 	const display: DisplayState = getDisplayState({

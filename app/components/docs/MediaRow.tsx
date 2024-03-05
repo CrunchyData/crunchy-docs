@@ -1,5 +1,5 @@
-import { Link, LinkProps, useLocation } from '@remix-run/react'
-import { PropsWithChildren } from 'react'
+import { Link, useLocation, type LinkProps } from '@remix-run/react'
+import { type PropsWithChildren } from 'react'
 import getProductIndexPath from '~/utils/get-product-index-path.ts'
 
 export function MediaRow({ children }: PropsWithChildren) {
@@ -25,11 +25,11 @@ export function MediaImage({
 					to={`${getProductIndexPath(pathname)}/${to}`}
 					className={wrapperClass}
 				>
-					<img src={src} className="object-contain" />
+					<img src={src} className="object-contain" alt="" />
 				</Link>
 			) : (
 				<div className={wrapperClass}>
-					<img src={src} className="object-contain" />
+					<img src={src} className="object-contain" alt="" />
 				</div>
 			)}
 		</div>

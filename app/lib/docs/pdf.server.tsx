@@ -10,33 +10,31 @@ import {
 	renderToStream,
 } from '@react-pdf/renderer'
 import { createReadableStreamFromReadable } from '@remix-run/node'
-import LRUCache from 'lru-cache'
+import type LRUCache from 'lru-cache'
 import { getMDXComponent } from 'mdx-bundler/client/index.js'
 import stream from 'node:stream'
 import { useMemo } from 'react'
 import { NO_CACHE, SALT, createCache } from '~/utils/cache.server.ts'
 import { removeEndSlashes } from '~/utils/removeEndSlashes.ts'
 import { getConfig, getDocFromDir } from './doc.server.ts'
-import { NavItem, getMenu } from './menu.server.ts'
+import { type NavItem, getMenu } from './menu.server.ts'
 import { parseMdxToPdf } from './pdf/index.server.ts'
-import { replaceConfigVars } from './utils.ts'
+import { type Access, replaceConfigVars } from './utils.ts'
 
 export async function renderPDF({
 	product,
 	ref,
 	version,
-	isPrivate,
+	access = 'public',
 }: {
 	product: string
 	ref: string
 	version: string
-	isPrivate?: boolean
+
+	access?: Access
 }) {
-	const docs = await getPDFData({ product, ref, version, isPrivate })
-	if (!docs)
-		throw new Error(
-			`No docs found for: ${isPrivate ? 'private/' : ''}${product}/${ref}`,
-		)
+	const docs = await getPDFData({ product, ref, version, access })
+	if (!docs) throw new Error(`No docs found for: ${access}/${product}/${ref}`)
 
 	return renderToStream(<PDF docs={docs} />)
 		.then(stream.Readable.from)
@@ -90,7 +88,7 @@ global.pdfCache ??= createCache<string[] | undefined>(
 			product,
 			ref: context.ref,
 			version,
-			isPrivate: access === 'private',
+			access: access as Access,
 		})
 	},
 )
@@ -99,26 +97,26 @@ export async function getPDFData({
 	product,
 	ref,
 	version,
-	isPrivate = false,
+	access = 'public',
 }: {
 	product: string
 	ref: string
 	version: string
-	isPrivate?: boolean
+	access?: Access
 }): Promise<string[] | undefined> {
 	if (NO_CACHE) {
-		return getFreshPDFData({ product, ref, version, isPrivate })
+		return getFreshPDFData({ product, ref, version, access })
 	}
 
-	if (isPrivate) {
-		const key = `private:${product}:${ref}:${SALT}`
+	if (access !== 'public') {
+		const key = `${access}:${product}:${ref}:${SALT}`
 		if (pdfCache.has(key)) {
 			const doc = await pdfCache.fetch(key, { fetchContext: { ref } })
 			return doc
 		}
 	}
 
-	const key = `public:${product}:${ref}:${SALT}`
+	const key = `${access}:${product}:${ref}:${SALT}`
 	const docs = await pdfCache.fetch(key, { fetchContext: { ref } })
 	return docs
 }
@@ -127,15 +125,16 @@ async function getFreshPDFData({
 	product,
 	ref,
 	version,
-	isPrivate = false,
+	access = 'public',
 }: {
 	product: string
 	ref: string
 	version: string
-	isPrivate?: boolean
+	access?: Access
 }): Promise<string[]> {
+	const isPrivate = access !== 'public'
 	const [menu, config] = await Promise.all([
-		getMenu({ product, ref, version, isPrivate }),
+		getMenu({ product, ref, version, access }),
 		getConfig({ product, version, isPrivate }),
 	])
 

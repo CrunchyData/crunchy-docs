@@ -16,7 +16,6 @@ import rehypeWrapTable from './tables.server.ts'
 export async function parseMdx(mdx: string) {
 	// Pull all h2 & h3 headings
 	let headings: Heading[] = []
-
 	const { frontmatter, code } = await bundleMDX({
 		source: mdx,
 		mdxOptions(options) {
