@@ -13,6 +13,7 @@ import { getProductData } from '~/lib/docs/product.server.ts'
 import { getProductAccess } from '~/lib/docs/utils.ts'
 import {
 	getProductVersions,
+	getVersion,
 	versionsToMenu,
 } from '~/lib/docs/versions.server.ts'
 
@@ -27,7 +28,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 	const productAccess = getProductAccess(product)
 
 	const versions = await getProductVersions({ product, isPrivate: true })
-	const version = ref === 'latest' ? versions[0] : ref
+	const { version, isPreview } = getVersion(versions, ref)
 
 	let betterUrl = validateParams(versions, ['latest'], {
 		product,
@@ -47,6 +48,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 		links,
 		ref,
 		version,
+		isPreview,
 		basePath: '/documentation/private',
 	})
 }
@@ -61,13 +63,14 @@ export function useDocLayoutLoaderData(): SerializeFrom<typeof loader> {
 }
 
 export default function DocLayout() {
-	const { menu, product, versions, links, basePath, ref } =
+	const { menu, product, versions, links, basePath, ref, isPreview } =
 		useLoaderData<typeof loader>()
 	return (
 		<Container
 			menu={menu}
 			product={product}
 			productRef={ref}
+			isPreview={isPreview}
 			versions={versions}
 			links={links}
 			basePath={basePath}

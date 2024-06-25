@@ -36,7 +36,7 @@ import TableOfContents from '~/components/layout/TableOfContents.tsx'
 import { getDoc } from '~/lib/docs/doc.server.ts'
 import { type NavItem } from '~/lib/docs/menu.server.ts'
 import { getBreadcrumbs, getChildren, getPagination } from '~/lib/docs/menu.ts'
-import { getProductVersions } from '~/lib/docs/versions.server.ts'
+import { getProductVersions, getVersion } from '~/lib/docs/versions.server.ts'
 import { type NavLink } from '~/types.ts'
 import { CACHE_CONTROL } from '~/utils/http.server.ts'
 import { removeEndSlashes } from '~/utils/removeEndSlashes.ts'
@@ -50,7 +50,7 @@ export async function publicLoader({ params }: LoaderFunctionArgs) {
 
 	const versions = await getProductVersions({ product })
 	const isLatest = ref === 'latest'
-	const version = isLatest ? versions[0] : ref
+	const { version } = getVersion(versions, ref)
 
 	const doc = await getDoc({
 		product,
@@ -91,7 +91,7 @@ export async function privateLoader({ params }: LoaderFunctionArgs) {
 
 	const versions = await getProductVersions({ product, isPrivate: true })
 	const isLatest = ref === 'latest'
-	const version = isLatest ? versions[0] : ref
+	const { version } = getVersion(versions, ref)
 
 	const doc = await getDoc({
 		product,
@@ -208,11 +208,11 @@ export function Content({
 					) : null}
 				</div>
 				{showTitle ? (
-					<h1 className="mt-8 font-display text-3xl font-bold text-primary md:text-4xl">
+					<h1 className="mb-6 mt-8 font-display text-3xl font-bold text-primary md:text-4xl">
 						{attributes.title}
 					</h1>
 				) : null}
-				<div className="prose mt-6 w-full max-w-none pb-8 lg:prose-sm xl:prose-base prose-headings:font-display prose-headings:text-primary">
+				<div className="prose w-full max-w-none pb-8 lg:prose-sm xl:prose-base prose-headings:font-display prose-headings:text-primary">
 					{html ? (
 						<Component
 							components={{

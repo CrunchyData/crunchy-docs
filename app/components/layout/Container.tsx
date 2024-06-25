@@ -1,5 +1,9 @@
 import { Dialog, Menu, Transition } from '@headlessui/react'
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
+import {
+	ChevronDownIcon,
+	ChevronRightIcon,
+	ExclamationTriangleIcon,
+} from '@heroicons/react/20/solid'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 import { Link, NavLink, useLocation } from '@remix-run/react'
 import { clsx } from 'clsx'
@@ -13,6 +17,7 @@ type ContainerProps = {
 	menu: NavItem[]
 	product: TNavLink
 	productRef: string
+	isPreview: boolean
 	versions: Zipper.NonEmptyZipperObj<TNavLink> | null
 	links: TNavLink[]
 	basePath: string
@@ -24,6 +29,7 @@ export default function Container({
 	menu,
 	product,
 	productRef,
+	isPreview,
 	versions,
 	links,
 	basePath,
@@ -57,7 +63,7 @@ export default function Container({
 
 	return (
 		<div>
-			<header className="sticky top-0 z-50 flex flex-wrap items-center justify-between bg-crunchy px-4 py-2 sm:px-6 lg:px-8">
+			<header className="sticky top-0 z-50 flex h-16 flex-wrap items-center justify-between bg-crunchy px-4 py-2 sm:px-6 lg:px-8">
 				<div className="mr-6 flex lg:hidden">
 					<MobileNavigation menu={menu} basePath={basePath} />
 				</div>
@@ -161,7 +167,31 @@ export default function Container({
 						</div>
 					</div>
 				</div>
-				<div className="min-w-0 flex-1 py-8">{children}</div>
+				<div className="min-w-0 flex-1">
+					{isPreview ? (
+						<div className=" bg-warning-500/20 text-warning-900">
+							<div className="not-prose px-6 pt-4">
+								<p className="flex items-center font-display font-bold">
+									<ExclamationTriangleIcon className="h-4 w-4" />
+									<span className="pl-1">Warning</span>
+								</p>
+							</div>
+							<div className="warning-body px-6 pb-4">
+								This is a preview version of the documentation. Content is
+								subject to change and if you are looking for the latest stable
+								version you can find that{' '}
+								<Link
+									className="font-semibold underline hover:no-underline"
+									to={`${basePath}${product.to.replace(productRef, 'latest')}`}
+								>
+									here
+								</Link>
+								.
+							</div>
+						</div>
+					) : null}
+					<div className="py-8">{children}</div>
+				</div>
 			</div>
 		</div>
 	)

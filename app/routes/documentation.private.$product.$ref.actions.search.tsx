@@ -3,7 +3,7 @@ import lunr from 'lunr'
 import invariant from 'tiny-invariant'
 import { getSearch, type SearchDoc } from '~/lib/docs/search.server.ts'
 import { getProductAccess } from '~/lib/docs/utils.ts'
-import { getProductVersions } from '~/lib/docs/versions.server.ts'
+import { getProductVersions, getVersion } from '~/lib/docs/versions.server.ts'
 
 function getBodyContext(body: string, term: string) {
 	const numContextWords = 2
@@ -36,7 +36,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 	if (!term) return json({ results: [] })
 
 	const versions = await getProductVersions({ product, isPrivate: true })
-	const version = ref === 'latest' ? versions[0] : ref
+	const { version } = getVersion(versions, ref)
 
 	const search = await getSearch({
 		product,

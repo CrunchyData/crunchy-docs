@@ -19,23 +19,41 @@ export function getLatestVersion(versions: string[]) {
 }
 
 const versionValidator = z.string().regex(/\d(\.\d){0,2}/)
-const oldVersionJsonValidator = z.array(versionValidator).nonempty()
-const newVersionJsonValidator = z
-	.array(z.object({ version: versionValidator, isPublic: z.boolean() }))
+const versionOldSchema = z.object({
+	version: versionValidator,
+	isPublic: z.boolean(),
+})
+
+const versionNewSchema = z.object({
+	version: versionValidator,
+	status: z.union([
+		z.literal('preview'),
+		z.literal('private'),
+		z.literal('public'),
+	]),
+})
+const versionJsonValidator = z
+	.array(
+		z.union([versionOldSchema, versionNewSchema]).transform(version => {
+			if ('isPublic' in version) {
+				return {
+					version: version.version,
+					status: version.isPublic ? 'public' : 'private',
+				}
+			}
+			return version
+		}),
+	)
 	.nonempty()
-const versionJsonValidator = z.union([
-	oldVersionJsonValidator,
-	newVersionJsonValidator,
-])
 
 export type Versions = z.infer<typeof versionJsonValidator>
-
+export type Version = { version: string; isPreview: boolean }
 declare global {
-	var versionsCache: LRUCache<string, string[]>
+	var versionsCache: LRUCache<string, Version[]>
 }
 
 // global for SS "HMR", we need a better story here
-global.versionsCache ??= createCache<string[]>(async key => {
+global.versionsCache ??= createCache<Version[]>(async key => {
 	console.log('Fetching fresh versions')
 	let [access, product] = key.split(':')
 	return getAllVersions({ product, isPrivate: access === 'private' })
@@ -62,39 +80,62 @@ async function getAllVersions({
 }: {
 	product: string
 	isPrivate?: boolean
-}): Promise<string[]> {
+}): Promise<{ version: string; isPreview: boolean }[]> {
 	const base = isPrivate ? privateRootPath(product) : rootPath(product)
 	const versions = await getJsonFile(
 		path.join(base, 'versions.json'),
 		versionJsonValidator.parse,
 	)
 
-	const isNewSchema = typeof versions[0] !== 'string'
-
-	if (!isNewSchema) return versions as string[]
-
 	return isPrivate
-		? (versions as z.infer<typeof newVersionJsonValidator>).map(
-				({ version }) => version,
-		  )
-		: (versions as z.infer<typeof newVersionJsonValidator>).flatMap(
-				({ isPublic, version }) => (isPublic ? [version] : []),
+		? versions.map(({ status, version }) => ({
+				version,
+				isPreview: status === 'preview',
+		  }))
+		: versions.flatMap(({ status, version }) =>
+				status !== 'private'
+					? [
+							{
+								version,
+								isPreview: status === 'preview',
+							},
+					  ]
+					: [],
 		  )
 }
 
 export function versionsToMenu(
 	product: string,
 	ref: string,
-	versions: string[],
+	versions: Version[],
 ): NonEmptyZipperObj<NavLink> | null {
-	const sorted = versions.map((v, i) => ({
-		label: i === 0 ? `${v} (latest)` : v,
-		to: `/${product}/${i === 0 ? 'latest' : v}`,
-	}))
-	const zipped = fromArray(sorted)
+	let latestFound = false
+	const sorted = versions.flatMap(({ version, isPreview }, i) => {
+		if (isPreview) return []
+		const item = {
+			label: latestFound ? version : `${version} (latest)`,
+			to: `/${product}/${latestFound ? version : 'latest'}`,
+		}
+		latestFound = true
+		return item
+	})
 
+	const version = versions.find(({ version }) => version === ref)
+	if (version?.isPreview) {
+		return fromArray([
+			{ label: `${ref} (preview)`, to: `/${product}/${ref}` },
+			...sorted,
+		])
+	}
+
+	const zipped = fromArray(sorted)
 	if (isEmpty(zipped)) return null
+	if (ref === 'latest') return zipped
+	return find<NavLink>(zipped, ({ label }) => label === ref)
+}
+
+export function getVersion(versions: Version[], ref: string): Version {
 	return ref === 'latest'
-		? zipped
-		: find<NavLink>(zipped, ({ label }) => label === ref)
+		? versions.find(({ isPreview }) => !isPreview) ?? versions[0]
+		: versions.find(v => v.version === ref) ?? versions[0]
 }
