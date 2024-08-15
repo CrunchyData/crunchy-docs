@@ -30,6 +30,7 @@ import {
 import Ref from '~/components/docs/Ref.tsx'
 import { RoleVar } from '~/components/docs/RoleVar.tsx'
 import { ChildHeading, TableLink } from '~/components/docs/Spec.tsx'
+import Table from '~/components/docs/Table.tsx'
 import Tag from '~/components/docs/Tag.tsx'
 import ErrorPage from '~/components/layout/ErrorPage.tsx'
 import TableOfContents from '~/components/layout/TableOfContents.tsx'
@@ -42,7 +43,7 @@ import { CACHE_CONTROL } from '~/utils/http.server.ts'
 import { removeEndSlashes } from '~/utils/removeEndSlashes.ts'
 
 export async function publicLoader({ params }: LoaderFunctionArgs) {
-	let { product, ref, '*': splat } = params
+	const { product, ref, '*': splat } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
 
@@ -83,7 +84,7 @@ export async function publicLoader({ params }: LoaderFunctionArgs) {
 }
 
 export async function privateLoader({ params }: LoaderFunctionArgs) {
-	let { product, ref, '*': splat } = params
+	const { product, ref, '*': splat } = params
 	invariant(product, 'expected `params.product`')
 	invariant(ref, 'expected `params.ref`')
 
@@ -125,8 +126,9 @@ export async function privateLoader({ params }: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
+	const cacheControl = loaderHeaders.get('Cache-Control') ?? CACHE_CONTROL.doc
 	return {
-		'Cache-Control': loaderHeaders.get('Cache-Control')!,
+		'Cache-Control': cacheControl,
 		'Vary': 'Cookie',
 	}
 }
@@ -223,6 +225,7 @@ export function Content({
 								TableLink,
 								Image,
 								CopyButton,
+								Table,
 								Tag,
 								Ref,
 								MediaRow,
@@ -279,7 +282,6 @@ export function Content({
 
 export function ErrorBoundary() {
 	const error = useRouteError()
-	console.log(error)
 	let status = 500
 	let message = 'Unknown error'
 

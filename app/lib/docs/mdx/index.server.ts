@@ -1,4 +1,5 @@
 import { bundleMDX } from 'mdx-bundler'
+import path from 'path'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
@@ -15,9 +16,10 @@ import rehypeWrapTable from './tables.server.ts'
 
 export async function parseMdx(mdx: string) {
 	// Pull all h2 & h3 headings
-	let headings: Heading[] = []
+	const headings: Heading[] = []
 	const { frontmatter, code } = await bundleMDX({
 		source: mdx,
+		cwd: path.join(process.cwd(), 'documentation'),
 		mdxOptions(options) {
 			options.remarkPlugins = [
 				...(options.remarkPlugins ?? []),
