@@ -92,16 +92,12 @@ async function getAllVersions({
 				version,
 				isPreview: status === 'preview',
 		  }))
-		: versions.flatMap(({ status, version }) =>
-				status !== 'private'
-					? [
-							{
-								version,
-								isPreview: status === 'preview',
-							},
-					  ]
-					: [],
-		  )
+		: versions.flatMap(({ status, version }) => [
+				{
+					version,
+					isPreview: status !== 'public',
+				},
+		  ])
 }
 
 export function versionsToMenu(
