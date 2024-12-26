@@ -1,5 +1,5 @@
 import fs from 'fs/promises'
-import { dirname, join } from 'path'
+import { dirname, join, basename } from 'path'
 import { getPublicProductSlug } from './utils.ts'
 
 const __dirname = dirname(import.meta.url).replace('file://', '')
@@ -8,9 +8,22 @@ const publicProductPathMap: Record<string, string | undefined> = {
 	'postgres-operator': process.env.PGO_PATH,
 }
 
+const productDataPathMap: Record<string, string | undefined> = {
+	'postgres-operator': process.env.PGO_DATA_PATH,
+	'postgres-operator-private': process.env.PGO_DATA_PATH,
+}
+
 const privateProductPathMap: Record<string, string | undefined> = {
 	'postgres-operator-private': process.env.PGO_PATH,
 	'crunchy-ha-postgresql': process.env.AUTOMATION_PATH,
+}
+
+export function dataPath(product: string, filePath: string) {
+	const localPath = productDataPathMap?.[product]
+	if (localPath) {
+		return join(localPath, basename(filePath))
+	}
+	return join(__dirname, '../', 'documentation', filePath)
 }
 
 export function contentPath(product: string, ref: string) {

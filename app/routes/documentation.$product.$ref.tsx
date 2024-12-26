@@ -27,8 +27,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
 	const versions = await getProductVersions({ product })
 	const { version, isPreview } = getVersion(versions, ref)
 
-	console.log(versions, version, isPreview)
-
 	let betterUrl = validateParams(versions, ['latest'], {
 		product,
 		ref,

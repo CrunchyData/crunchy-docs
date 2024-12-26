@@ -7,6 +7,7 @@ import {
 	Svg,
 	Text,
 	View,
+	renderToFile,
 	renderToStream,
 } from '@react-pdf/renderer'
 import { createReadableStreamFromReadable } from '@remix-run/node'
@@ -20,6 +21,7 @@ import { getConfig, getDocFromDir } from './doc.server.ts'
 import { type NavItem, getMenu } from './menu.server.ts'
 import { parseMdxToPdf } from './pdf/index.server.ts'
 import { type Access, replaceConfigVars } from './utils.ts'
+import { contentPath, dataPath, privateContentPath } from './fs.server.ts'
 
 export async function renderPDF({
 	product,
@@ -39,6 +41,25 @@ export async function renderPDF({
 	return renderToStream(<PDF docs={docs} />)
 		.then(stream.Readable.from)
 		.then(createReadableStreamFromReadable)
+}
+
+export async function savePDF({
+	product,
+	ref,
+	version,
+	access = 'public',
+}: {
+	product: string
+	ref: string
+	version: string
+
+	access?: Access
+}) {
+	const docs = await getPDFData({ product, ref, version, access })
+	if (!docs) throw new Error(`No docs found for: ${access}/${product}/${ref}`)
+
+	const savePath = access !== 'public' ? privateContentPath(product, ref) : contentPath(product, ref)
+	return renderToFile(<PDF docs={docs} />, `${savePath}/documentation.pdf`)
 }
 
 function PDF({ docs }: { docs: string[] }) {
@@ -173,10 +194,42 @@ async function getFreshPDFData({
 	}
 
 	return Promise.all(
-		docs.map(doc =>
-			parseMdxToPdf(replaceConfigVars(doc, config)).then(({ pdf }) => pdf),
+		docs.map(async doc => {
+			const getDataFile = (filePath: string) => dataPath(product, filePath)
+			const replacedData = await replaceImports(replaceConfigVars(doc, config), getDataFile)
+			return parseMdxToPdf(replacedData).then(({ pdf }) => pdf)
+		}
 		),
 	)
+}
+
+async function replaceImports(content: string, dataGetter: (filepath: string) => string) {
+	// Regex to match import statements
+  const importRegex = /import\s+\{\s*([\w,\s]+)\s*\}\s+from\s+['"](.+?)['"]/g;
+
+  // Find and process imports
+  const imports: Record<string, unknown> = {};
+  let match;
+  while ((match = importRegex.exec(content))) {
+    const importedVars = match[1].split(',').map((v) => v.trim());
+    const importPath = dataGetter(match[2]);
+
+    // Load the imported file (assuming it's a module exporting JSON or data)
+    const data = await import(importPath);
+    importedVars.forEach((variable) => {
+      imports[variable] = data[variable];
+    });
+  }
+
+  // Replace variable references in component props
+  let transformedContent = content;
+  Object.entries(imports).forEach(([key, value]) => {
+    const dataString = JSON.stringify(value);
+    const propRegex = new RegExp(`{${key}}`, 'g');
+    transformedContent = transformedContent.replace(propRegex, `{${dataString}}`);
+  });
+
+  return transformedContent;
 }
 
 async function pdfFromItem({
@@ -193,7 +246,7 @@ async function pdfFromItem({
 	isPrivate?: boolean
 }): Promise<string | null> {
 	const slug = slugToDocKey(item.slug, product, ref)
-	// if (slug !== '/quickstart') return null
+	 //if (slug !== '/overview/supported-platforms') return null
 
 	const doc = await getDocFromDir({ product, version, slug, isPrivate })
 
