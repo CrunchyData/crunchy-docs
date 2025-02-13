@@ -57,6 +57,7 @@ export function getPublicProductSlug(product: string): string {
 export type Access = 'public' | 'private' | 'both'
 
 const productAccessMap: Record<string, Access> = {
+	'postgres-operator': 'public',
 	'postgres-operator-private': 'both',
 	'crunchy-ha-postgresql': 'private',
 }

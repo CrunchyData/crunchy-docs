@@ -13,14 +13,15 @@
     "dev-server": "cross-env MOCKS=true tsx watch --clear-screen=false --ignore \"app/**\" --ignore \"docs-build/**\" --ignore \"node_modules/**\" ./docs-index.js",
     "format": "prettier --write .",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "lint:files": "ts-node --esm scripts/lint-file-case.ts",
+    "lint:files": "tsx scripts/lint-file-case.ts",
     "start": "cross-env NODE_ENV=production node docs-index.js",
     "typecheck": "tsc",
     "validate": "run-p lint typecheck test",
     "lint-staged": "lint-staged",
-    "build-crd": "ts-node --esm scripts/crd-builder/index.ts /Users/wking/sites/crunchy/savannah/config/crd/bases /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-docs/documentation/references/crd/5.0.x",
-    "migrate-docs": "ts-node --esm scripts/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-postgres-automation-docs/documentation/2.0",
-    "build-config": "ts-node --esm scripts/config-builder/index.ts /Users/wking/sites/crunchy/savannah/docs/config.toml /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.0"
+    "build-crd": "tsx scripts/crd-builder/index.ts /Users/wking/sites/crunchy/savannah/config/crd/bases /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-docs/documentation/references/crd/5.0.x",
+    "migrate-docs": "tsx scripts/migrate-docs.ts /Users/wking/sites/crunchy/crunchy-postgres-automation-docs/documentation/2.0",
+    "generate:pdf": "tsx --require dotenv/config scripts/generate-pdf.ts",
+    "build-config": "tsx scripts/config-builder/index.ts /Users/wking/sites/crunchy/savannah/docs/config.toml /Users/wking/sites/crunchy/crunchy-postgres-for-kubernetes-private-docs/public/5.2.0"
   },
   "lint-staged": {
     "*.mdx": "npm run lint:files"
@@ -126,11 +127,11 @@
     "prettier": "^2.8.8",
     "prettier-plugin-organize-imports": "^3.2.2",
     "prettier-plugin-tailwindcss": "^0.2.8",
+    "safe-eval": "^0.4.1",
     "tailwindcss": "^3.3.2",
     "toml": "^3.0.0",
-    "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "tsx": "^3.12.7",
+    "tsx": "^3.14.0",
     "typescript": "^5.1.3",
     "vfile-matter": "^4.0.1"
   },

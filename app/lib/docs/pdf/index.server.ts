@@ -5,6 +5,7 @@ import yaml from 'js-yaml'
 import { type Root, type Text } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import {
+    MdxJsxAttributeValueExpression,
 	type MdxJsxFlowElement,
 	type MdxJsxTextElement,
 	mdxJsxFromMarkdown,
@@ -15,6 +16,10 @@ import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
 import { visit } from 'unist-util-visit'
 import { docAttributes } from '../attrs.server.ts'
+import path from 'path'
+import safeEval from 'safe-eval'
+import { isArray } from 'util'
+
 
 export async function parseMdxToPdf(mdx: string) {
 	const { frontmatter, code } = await bundleMDX({
@@ -27,7 +32,7 @@ export async function parseMdxToPdf(mdx: string) {
 				remarkGfm,
 			]
 
-			options.rehypePlugins = [...(options.rehypePlugins ?? []), rehypeToPdf]
+			options.rehypePlugins = [...(options.rehypePlugins ?? []), rehypeToPdf(mdx)]
 
 			return options
 		},
@@ -66,7 +71,7 @@ function remarkTitle() {
 	}
 }
 
-function transformNode(node: any, i: number, level = 0) {
+async function transformNode(node: any, { index, level = 0, data = {}, source}: { index: number, level?: number, data?: Record<string, unknown>, source: string }) {
 	switch (node.type) {
 		case 'root':
 			return node
@@ -255,11 +260,15 @@ function transformNode(node: any, i: number, level = 0) {
 				}
 
 				case 'tr': {
-					return convertTR(node, i)
+					return convertTR(node, index)
 				}
 
 				case 'td': {
 					return convertTD(node)
+				}
+
+				case 'Table': {
+					return convertDynamicTable(node)
 				}
 
 				default:
@@ -387,7 +396,7 @@ function transformNode(node: any, i: number, level = 0) {
 				}
 
 				case 'tr': {
-					return convertTR(node, i)
+					return convertTR(node, index)
 				}
 
 				case 'td': {
@@ -404,6 +413,8 @@ function transformNode(node: any, i: number, level = 0) {
 			}
 
 		case 'mdxjsEsm':
+			//const data = await evaluateImport(node.value, source)
+			//console.log("ESM: ", data)
 			return null
 
 		default:
@@ -412,26 +423,32 @@ function transformNode(node: any, i: number, level = 0) {
 	}
 }
 
-function traverse(node: any, i: number, level = 0) {
-	node = transformNode(node, i, level)
+async function traverse(node: any, {index, level = 0, data = {}, source}: {index: number, level?: number, data?: Record<string, unknown>, source: string}) {
+	node = await transformNode(node, { index, level, data, source })
 
 	// Recursively traverse child nodes
 	if (node !== null && 'children' in node && Array.isArray(node.children)) {
-		node.children = (node.children as any[])
-			.filter(node => node.type !== 'text' || node.value !== '\n')
-			.reduce((acc: any[], child: any, i) => {
-				const updatedChild = traverse(child, i, level + 1)
-				if (updatedChild !== null) acc.push(updatedChild)
-				return acc
-			}, [])
+		let children = []
+		let i = 0
+		for (const child of node.children) {
+			if (node.type !== 'text' || node.value !== '\n') {
+				const updatedChild = await traverse(child, { index: i++, level: level + 1, data, source})
+				if (updatedChild !== null) {
+					children.push(updatedChild)
+				}
+			}
+		}
+		node.children = children
 	}
 
 	return node
 }
 
-function rehypeToPdf() {
+function rehypeToPdf(mdx:string) {
+	return function plugin() {
 	return async function transform(tree: Root) {
-		tree = traverse(tree, 0)
+		tree = await traverse(tree, { index: 0, source: mdx })
+	}
 	}
 }
 
@@ -450,7 +467,6 @@ function convertComponent(
 		extensions: [mdxJsx({ acorn, addResult: true })],
 		mdastExtensions: [mdxJsxFromMarkdown()],
 	})
-
 	let component = children[0] as any
 
 	if (!isMdxJsxFlowElement(component) && !isMdxJsxTextElement(component)) {
@@ -491,6 +507,55 @@ function convertImage(node: Element) {
 	const raw = `<Image src="${src}" style={{ marginTop: 8 }} />`
 
 	return convertComponent(raw)
+}
+
+function convertDynamicTable(node: MdxJsxFlowElement) {
+	let rows: Array<Array<string>> = []
+	let columns: Array<string> = []
+	let footnotes: Array<string> = []
+	node.attributes?.forEach(a => {
+		const value = safeEval((a.value as MdxJsxAttributeValueExpression).value)
+if (!value || !Array.isArray(value) || a.type !== 'mdxJsxAttribute') return
+		switch (a.name) {
+			case 'rows':
+				rows = value as Array<Array<string>>
+				break;
+			case 'columns':
+				columns = value as Array<string>
+				break;
+			case 'footnotes':
+				footnotes = value as Array<string>
+				break;
+		}
+		})
+
+      const raw = `<View style={{ display: 'flex', flexDirection: 'column', flexWrap: 'nowrap', alignItems: 'stretch', marginTop: 8, fontSize: 10, border: '1px solid #94a3b8', borderRadius: 4 }}><View style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: '#e2e8f0', borderBottom: '1px solid #94a3b8' }}>${columns.map((c) => `<Text style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingVertical: 3,
+          paddingHorizontal: 5,
+          flexGrow: 1,
+          flexShrink: 1,
+        }} key={${JSON.stringify(c)}}>${c}</Text>`
+      ).join('')}</View>${rows.map((r, i) => `<View style={{
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'nowrap',
+      alignItems: 'stretch',
+      flexGrow: 1,
+      flexShrink: 1,
+      backgroundColor: "${i % 2 !== 0 ? '#f1f5f9' : 'transparent'}"}}>${r.map((v) => `<Text style={{
+        display: 'flex',
+        flexDirection: 'column',
+        paddingVertical: 3,
+        paddingHorizontal: 5,
+        flexGrow: 1,
+        flexShrink: 1, }}>${v}</Text>`).join('')}
+    </View>`).join('')}${footnotes.map((f, i) => `<View style={{ paddingVertical: 3, paddingHorizontal: 5, display: 'flex', flexDirection: 'row', gap: 3, alignItems: 'start'}} key={${JSON.stringify(f)}}><Text style={{ fontSize: 6 }}>${i+1}</Text><Text style={{ fontSize: 8 }}>${f}</Text></View>`).join('')}</View>`;
+
+	return convertComponent(raw.replace(/[\r\n]/g, ' '), node)
 }
 
 function convertTable(node: Element | MdxJsxFlowElement) {
