@@ -60,6 +60,7 @@ const productAccessMap: Record<string, Access> = {
 	'postgres-operator': 'public',
 	'postgres-operator-private': 'both',
 	'crunchy-ha-postgresql': 'private',
+	'cpa': 'private',
 }
 
 export function getProductAccess(product: string): Access {
