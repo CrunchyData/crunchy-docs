@@ -2,8 +2,11 @@ import tailwindcssAspect from '@tailwindcss/aspect-ratio'
 import tailwindcssForms from '@tailwindcss/forms'
 import tailwindcssTypography from '@tailwindcss/typography'
 import type { Config } from 'tailwindcss'
-import { emerald, orange, zinc } from 'tailwindcss/colors.js'
-import { fontFamily, spacing } from 'tailwindcss/defaultTheme.js'
+import colors from 'tailwindcss/colors.js'
+import defaultTheme from 'tailwindcss/defaultTheme.js'
+
+const { emerald, orange, zinc } = colors
+const { fontFamily, spacing } = defaultTheme
 
 function withOpacityValue(variable: string) {
 	return ({ opacityValue }: { opacityValue: number }) => {

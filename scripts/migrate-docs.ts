@@ -97,7 +97,7 @@ function replaceParams(file: string): string {
 }
 
 function replaceRefs(file: string, filepath: string): string {
-	const regex = /\[([^\]]+)\]\(\{\{\s?<\s?(?:relref|ref)\s"([^"]+)"[^\)]+\)/gm
+	const regex = /\[([^\]]+)\]\(\{\{\s?<\s?(?:relref|ref)\s"([^"]+)"[^)]+\)/gm
 	return file.replace(regex, (match, label, to, id) => {
 		if (typeof to !== 'string') return match
 		to = to.replace(/^\//gm, '').replace('/_index.md', '').replace('.md', '')
@@ -142,7 +142,7 @@ function replaceNotices(file: string): string {
 
 function replaceIdHeadings(file: string): string {
 	return file.replace(
-		/(#+)\s([^\{|\n]+){#([^\}]+)}/gm,
+		/(#+)\s([^{|\n]+){#([^}]+)}/gm,
 		(match, size, heading, id) => {
 			const level = size.length
 			return `<h${level} id="${id}">${heading.trim()}</h${level}>`
