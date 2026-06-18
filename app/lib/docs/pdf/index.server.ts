@@ -5,7 +5,7 @@ import yaml from 'js-yaml'
 import { type Root, type Text } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import {
-    MdxJsxAttributeValueExpression,
+	type MdxJsxAttributeValueExpression,
 	type MdxJsxFlowElement,
 	type MdxJsxTextElement,
 	mdxJsxFromMarkdown,
@@ -16,9 +16,7 @@ import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
 import { visit } from 'unist-util-visit'
 import { docAttributes } from '../attrs.server.ts'
-import path from 'path'
 import safeEval from 'safe-eval'
-import { isArray } from 'util'
 
 
 export async function parseMdxToPdf(mdx: string) {
